@@ -20,14 +20,30 @@
  *	[0,254] <-> [-1.00 to 1.00], 255 <-> 1.0079
  *	Note this makes value 127 <-> 0
  */
+ #define AWG_ZERO_VAL 127
  
 /*	See (equip. man. 4B-11)
  *	Max clock rate is 1.024 GHz (= 1024 MHz)
  *	Min clock rate is 1 kHz     (= 0.001 MHz)
  */
 
+ #include "math.h" // For round(), among others
+ 
+ typedef freqList {
+	unsigned int	freqCount;
+	double *		freqList;
+	double *		ampList;
+ } freqList_type;
+ typedef freqList_type * freqList_ptr;
+ 
 /*!	\brief 
  *
  */
+
+ 
+freqList_ptr genFreqList(double start_f, double stop_f, unsigned int freqCount);
+unsigned int pointsToHalfCycle(double targetDuration, double pointInterval, double frequency);
+unsigned char * genPointList(freqList_ptr freqList, double duration, double pointInterval);
+unsigned char * genWavePts(double freq, double amp, unsigned int numPts, unsigned char * startPtr);
 
 #endif
