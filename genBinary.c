@@ -98,7 +98,7 @@ unsigned char * genPointList(freqList_ptr freqList, double duration, double poin
 		printf("Mod 32: %d\n", (totalPoints << numShifts)%32);
 		printf("Shift count: %d, to %d\n", numShifts, totalPoints << numShifts);
 		
-		pointVals = realloc(pointVals, sizeof(unsigned char)*totalPoints*numShifts);
+		pointVals = realloc(pointVals, sizeof(unsigned char)*totalPoints*(1<<numShifts));
 		if ( NULL == pointVals ) return NULL;
 		
 		for (i=0; i<numShifts; i++) {
