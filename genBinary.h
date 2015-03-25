@@ -27,7 +27,7 @@
  *	Min clock rate is 1 kHz     (= 0.001 MHz)
  */
 
- #include "math.h" // For round(), among others
+ 
  
  #define	PI		3.141592653589793
  #define	TWO_PI	6.283185307179586
@@ -46,7 +46,7 @@
  
 freqList_ptr genFreqList(double start_f, double stop_f, unsigned int freqCount);
 unsigned int pointsToHalfCycle(double targetDuration, double pointInterval, double frequency);
-unsigned char * genPointList(freqList_ptr freqList, double duration, double pointInterval);
+unsigned char * genPointList(freqList_ptr freqList, double duration, double pointInterval, unsigned long * finalCount);
 unsigned char * genWavePts(double freq, double amp, unsigned int numPts, double pointInterval, unsigned char * startPtr);
 
 #endif
