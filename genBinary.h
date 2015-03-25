@@ -29,7 +29,10 @@
 
  #include "math.h" // For round(), among others
  
- typedef freqList {
+ #define	PI		3.141592653589793
+ #define	TWO_PI	6.283185307179586
+ 
+ typedef struct freqList {
 	unsigned int	freqCount;
 	double *		freqList;
 	double *		ampList;
@@ -44,6 +47,6 @@
 freqList_ptr genFreqList(double start_f, double stop_f, unsigned int freqCount);
 unsigned int pointsToHalfCycle(double targetDuration, double pointInterval, double frequency);
 unsigned char * genPointList(freqList_ptr freqList, double duration, double pointInterval);
-unsigned char * genWavePts(double freq, double amp, unsigned int numPts, unsigned char * startPtr);
+unsigned char * genWavePts(double freq, double amp, unsigned int numPts, double pointInterval, unsigned char * startPtr);
 
 #endif

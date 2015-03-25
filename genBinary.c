@@ -1,4 +1,6 @@
-#include "genBinary.hpp"
+#include <stdlib.h>
+#include <stdio.h>
+#include "genBinary.h"
 
 freqList_ptr genFreqList(double start_f, double stop_f, unsigned int freqCount) {
 	freqList_ptr	newList		= NULL;
@@ -8,7 +10,7 @@ freqList_ptr genFreqList(double start_f, double stop_f, unsigned int freqCount) 
 	
 	if ( freqCount <= 1 ) return NULL; // 0 or 1 frequencies is silly
 	
-	if ( NULL == (newList = malloc(sizeof(freqList)) ) ) return NULL;
+	if ( NULL == (newList = malloc(sizeof(freqList_type)) ) ) return NULL;
 	
 	newList->freqCount	= freqCount;
 	listPtr				= malloc(sizeof(double)*freqCount);
@@ -58,13 +60,20 @@ unsigned char * genPointList(freqList_ptr freqList, double duration, double poin
 	fillPos = pointVals;
 	
 	for ( i=0; i<freqList->freqCount; i++ ) {
-		fillPos = genWavePts((freqList->freqList)[i], (freqList->ampList)[i] * lastFlip, pointCounts[i], fillPos);
+		fillPos = genWavePts((freqList->freqList)[i], (freqList->ampList)[i] * lastFlip, pointCounts[i], pointInterval, fillPos);
 		lastFlip = *(fillPos - 1) < AWG_ZERO_VAL ? 1.0 : -1.0;
 	}
 	
 	return pointVals;
 }
 
-genWavePts(double freq, double amp, unsigned int numPts, unsigned char * startPtr) {
+unsigned char * genWavePts(double freq, double amp, unsigned int numPts, double pointInterval, unsigned char * startPtr) {
+	unsigned int i = 0;
 	
+	for ( i=0; i < numPts; i++ ) {
+		double point = amp * sin(freq * ((double) i) * pointInterval * TWO_PI) + ((double) AWG_ZERO_VAL);
+		printf("%f -> %d",point, (unsigned char) round(point));
+		*(startPtr + i) = round(point);
+	}
+	return (startPtr + numPts);
 }
