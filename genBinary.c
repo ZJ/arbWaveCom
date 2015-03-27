@@ -77,7 +77,7 @@ unsigned char * genPointList(freqList_ptr freqList, double duration, double poin
 	}
 	printf("Total points after cont. check: %d\n", totalPoints);
 	printf("last flip: %f\n",lastFlip);
-	if ( lastFlip > 0.0 ) {
+	if ( lastFlip < 0.0 ) {
 		pointVals = realloc(pointVals, sizeof(unsigned char)*totalPoints*2);
 		if ( NULL == pointVals ) return NULL;
 		
@@ -122,4 +122,16 @@ unsigned char * genWavePts(double freq, double amp, unsigned int numPts, double 
 		*(startPtr + i) = round(point);
 	}
 	return (startPtr + numPts);
+}
+
+void writeToFile(unsigned char * ptsList, unsigned long numPtrs, char * lenStr) {
+	FILE * pointsFile = NULL;
+	
+	pointsFile = fopen("pointsFile.txt", "w");
+	if ( NULL == pointsFile ) return;
+	fprintf(pointsFile, "#%d%s", strlen(lenStr),lenStr);
+	fwrite(ptsList, sizeof(unsigned char), numPtrs, pointsFile);
+	fclose(pointsFile);
+	
+	return;
 }

@@ -11,7 +11,7 @@ int main (int arc, char * argv[]) {
 	unsigned long patternLength = 0;
 	char lenStr[20]= "";
 	
-	freqList = genFreqList(100e6, 200e6, 13);
+	freqList = genFreqList(100e6, 200e6, 17);
 	if ( NULL == freqList ) return -1;
 	printf("Made freqList\n");
 	
@@ -35,7 +35,7 @@ int main (int arc, char * argv[]) {
 	printf("%d\n",patternLength);
 	sprintf(lenStr,"%d", patternLength);
 	printf("#%d%s\n", strlen(lenStr),lenStr);
-	
+	writeToFile(pointList, patternLength, lenStr);
 	free(pointList);
 	free(ampList);
 	free(freqList);

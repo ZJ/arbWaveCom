@@ -48,5 +48,5 @@ freqList_ptr genFreqList(double start_f, double stop_f, unsigned int freqCount);
 unsigned int pointsToHalfCycle(double targetDuration, double pointInterval, double frequency);
 unsigned char * genPointList(freqList_ptr freqList, double duration, double pointInterval, unsigned long * finalCount);
 unsigned char * genWavePts(double freq, double amp, unsigned int numPts, double pointInterval, unsigned char * startPtr);
-
+void writeToFile(unsigned char * ptsList, unsigned long numPtrs, char * lenStr);
 #endif
