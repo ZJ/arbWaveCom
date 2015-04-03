@@ -1,44 +1,50 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <fcntl.h>
 #include "genBinary.h"
 
 int main (int arc, char * argv[]) {
-	freqList_ptr freqList = NULL;
-	unsigned char * pointList = NULL;
-	double * ampList = NULL;
-	int i = 0;
-	unsigned long patternLength = 0;
-	char lenStr[20]= "";
+	freqList_ptr	parsedList	= NULL;
+	unsigned int *	countList	= NULL;
+	unsigned char *	pointsList	= NULL;
+	int				checkStatus	= 0;
+	const double	interval = 1000.0/1024.0;
+	unsigned long	finalCount = 0;
+	const char baseName[] = "testFile";
+	const char tempPath[] = "../thething/demoFile.txt";
 	
-	freqList = genFreqList(100e6, 200e6, 17);
-	if ( NULL == freqList ) return -1;
-	printf("Made freqList\n");
+	_fmode = _O_BINARY;
 	
-	ampList = malloc(sizeof(double)*freqList->freqCount);
-	if ( NULL == ampList ) return -1;
-	freqList->ampList = ampList;
-	printf("Made ampList\n");
-	
-	printf("freqList->freqCount = %d\n", freqList->freqCount);
-	printf("*(freqList->freqList) = %f\n", *(freqList->freqList));
-	
-	for ( i=0; i<(freqList->freqCount); i++ ) {
-		*(ampList + i) = 100.0;
+	parsedList = readSpecFile(tempPath);
+	if ( NULL == parsedList ) {
+		fprintf(stderr, "Problem parsing file at \"%s\".\n", tempPath);
+		return -1;
 	}
-	printf("Init ampList to %f\n", *ampList);
 	
-	pointList = genPointList(freqList, 5.0e-8, 1.0e-9, &patternLength);
-	if ( NULL == pointList ) return -1;
-	printf("Done with points\n");
+	countList = pointCounts(parsedList, interval);
+	if ( NULL == countList ) {
+		fprintf(stderr, "Problem counting points.\n");
+		return -1;
+	}
+		
+	checkStatus = writeSummaryFile(baseName, parsedList, countList, interval);
+	if ( checkStatus ) {
+		fprintf(stderr, "Problem writing summary file.\n");
+		return -1;
+	}
 	
-	printf("%d\n",patternLength);
-	sprintf(lenStr,"%d", patternLength);
-	printf("#%d%s\n", strlen(lenStr),lenStr);
-	writeToFile(pointList, patternLength, lenStr);
-	free(pointList);
-	free(ampList);
-	free(freqList);
+	pointsList = genPointList(parsedList, countList, interval, &finalCount);
+	if ( NULL == pointsList ) {
+		fprintf(stderr, "Problem generating points.\n");
+		return -1;
+	}
+	
+	checkStatus = writeToFile(baseName, pointsList, finalCount);
+	if ( checkStatus ) {
+		fprintf(stderr, "Problem writing points file.\n");
+		return -1;
+	}
 	
 	return 0;
 }

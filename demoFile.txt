@@ -1,0 +1,9 @@
+# Lines starting with '#' are comments
+# All other lines should be in the following format
+# freq [MHz], duration [ns], amplitude [relative, [0,1] ]
+# durations are a goal, not a guarantee, will be rounded to nearest 1/2 cycle of freq (including 0!)
+# amplitudes relative scales, where 1 is full-scale.
+# Output is only 8-bit, so effective amplitude resolution is 1/127 ~ 0.008
+#
+# Example line of 111 MHz for 30ns, with 3/4 full scale amplitude
+# 100, 30, 0.75

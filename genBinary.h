@@ -29,13 +29,18 @@
 
  
  
- #define	PI		3.141592653589793
- #define	TWO_PI	6.283185307179586
- 
+#define	PI		3.141592653589793
+#define	TWO_PI	6.283185307179586
+#define DEFAULT_FREQ_LIST_SIZE 8
+#define GEN_BINARY_EPARSE  -1
+#define GEN_BINARY_ERESIZE -2
+
  typedef struct freqList {
 	unsigned int	freqCount;
+	unsigned int	actualSize;
 	double *		freqList;
 	double *		ampList;
+	double *		durList;
  } freqList_type;
  typedef freqList_type * freqList_ptr;
  
@@ -46,7 +51,16 @@
  
 freqList_ptr genFreqList(double start_f, double stop_f, unsigned int freqCount);
 unsigned int pointsToHalfCycle(double targetDuration, double pointInterval, double frequency);
-unsigned char * genPointList(freqList_ptr freqList, double duration, double pointInterval, unsigned long * finalCount);
+unsigned char * genPointList(const freqList_ptr freqList, const unsigned int * pointCounts, const double pointInterval, unsigned long * finalCount);
 unsigned char * genWavePts(double freq, double amp, unsigned int numPts, double pointInterval, unsigned char * startPtr);
-void writeToFile(unsigned char * ptsList, unsigned long numPtrs, char * lenStr);
+int writeToFile(const char * rootName, const unsigned char * ptsList, const unsigned long numPtrs);
+ssize_t myGetLine(char ** bufferPtr, size_t * bufferSize, FILE * fp);
+void freeFreqList(freqList_ptr toFree);
+int resizeFreqList(unsigned int newSize, freqList_ptr * toResize);
+freqList_ptr readSpecFile(const char * inPath);
+int parseLine(char * lineBuf, freqList_ptr destList);
+freqList_ptr blankFreqList();
+unsigned int * pointCounts(const freqList_ptr freqList, const double pointInterval);
+int writeSummaryFile(const char * rootName, const freqList_ptr freqList, const unsigned int * pointCounts, const double pointInterval);
+
 #endif
