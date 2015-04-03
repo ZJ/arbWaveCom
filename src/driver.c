@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <fcntl.h>
-#include "genBinary.h"
+#include "genBinary\genBinary.h"
 
 int main (int arc, char * argv[]) {
 	freqList_ptr	parsedList	= NULL;
@@ -12,7 +12,7 @@ int main (int arc, char * argv[]) {
 	const double	interval = 1000.0/1024.0;
 	unsigned long	finalCount = 0;
 	const char baseName[] = "testFile";
-	const char tempPath[] = "../thething/demoFile.txt";
+	const char tempPath[] = "demoFile.txt";
 	
 	_fmode = _O_BINARY;
 	
