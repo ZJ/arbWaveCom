@@ -4,7 +4,7 @@
 #include <fcntl.h>
 #include "genBinary\genBinary.h"
 
-int main (int arc, char * argv[]) {
+int main (int argc, char * argv[]) {
 	freqList_ptr	parsedList	= NULL;
 	unsigned int *	countList	= NULL;
 	unsigned char *	pointsList	= NULL;
@@ -13,7 +13,7 @@ int main (int arc, char * argv[]) {
 	unsigned long	finalCount = 0;
 	const char baseName[] = "testFile";
 	const char tempPath[] = "demoFile.txt";
-	
+
 	_fmode = _O_BINARY;
 	
 	parsedList = readSpecFile(tempPath);
