@@ -24,7 +24,7 @@ extern int g_opt_quiet;
 #define OPT_AMPSET_MASK		(1u << 10)
 #define OPT_PERIODSET_MASK	(1u << 11)
 #define OPT_NUMSET_MASK		(1u << 12)
-#define OPT_ALLSET_MASK		OPT_STARTSET_MASK | OPT_STOPSET_MASK | OPT_AMPSET_MASK | OPT_PERIODSET_MASK | OPT_NUMSET_MASK
+#define OPT_ALLSET_MASK		( OPT_STARTSET_MASK | OPT_STOPSET_MASK | OPT_AMPSET_MASK | OPT_PERIODSET_MASK | OPT_NUMSET_MASK )
 
 typedef struct progOptions {
 	uint32_t		flags;
@@ -37,5 +37,7 @@ typedef struct progOptions {
 	char *			inputPath;
 } progOptions_type;
 #define OPT_INIT_VAL {0, 0.0, 0.0, 0.0, 0, 1000.0/1024.0, 0.0, NULL}
+
+int parseOptions(int argc, char * argv[], progOptions_type * options);
 
 #endif

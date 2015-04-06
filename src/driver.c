@@ -3,6 +3,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include "genBinary\genBinary.h"
+#include "defOptions\defOptions.h"
 
 int main (int argc, char * argv[]) {
 	freqList_ptr	parsedList	= NULL;
@@ -13,8 +14,27 @@ int main (int argc, char * argv[]) {
 	unsigned long	finalCount = 0;
 	const char baseName[] = "testFile";
 	const char tempPath[] = "demoFile.txt";
-
+	
+	progOptions_type	myOptions = OPT_INIT_VAL;
+	
 	_fmode = _O_BINARY;
+	
+	checkStatus = parseOptions(argc, argv, &myOptions);
+	switch (checkStatus) {
+		case OPT_RET_OK:
+			// Do nothing
+			break;
+		case OPT_RET_EXIT:
+			return 0;
+			break;
+		case OPT_RET_ERR:
+			return -1;
+			break;
+		default:
+			//HOW!?
+			return -2;
+			break;
+	}
 	
 	parsedList = readSpecFile(tempPath);
 	if ( NULL == parsedList ) {
