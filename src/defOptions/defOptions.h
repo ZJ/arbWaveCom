@@ -39,5 +39,7 @@ typedef struct progOptions {
 #define OPT_INIT_VAL {0, 0.0, 0.0, 0.0, 0, 1000.0/1024.0, 0.0, NULL}
 
 int parseOptions(int argc, char * argv[], progOptions_type * options);
+void printOptions(const progOptions_type * toPrint, const char * idStr);
+void printBitSetting(uint32_t flags, unsigned int mask, const char * title);
 
 #endif

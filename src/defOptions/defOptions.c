@@ -30,14 +30,14 @@ int parseOptions(int argc, char * argv[], progOptions_type * options) {
 			{"number-freq", required_argument, 0, 'n'},
 			{"tooth-period", required_argument, 0, 'p'},
 			{"quiet", no_argument, 0, 'q'},
-			{"random-amp", required_argument, 0, 'r'},
+			{"random-amp", no_argument, 0, 'r'},
 			{"start-freq", required_argument, 0, 's'},
 			{"template", no_argument, 0, 't'},
 			{0,0,0,0} // Mark the end of the options list
 		};
 		// END OPTIONS TABLE
 		int longOptIdx = 0;
-		currentOption = getopt_long(argc, argv, "a:de:f:hi:n:p:qr:s:t", long_options, &longOptIdx);
+		currentOption = getopt_long(argc, argv, "a:de:f:hi:n:p:qrs:t", long_options, &longOptIdx);
 		
 		if ( -1 == currentOption ) break; // -1 is out of options
 		
@@ -70,7 +70,7 @@ int parseOptions(int argc, char * argv[], progOptions_type * options) {
 				strcpy(options->inputPath, optarg);
 				break;
 			case 'n':
-				options->num_f = //Pull string into number;
+				options->num_f = strtol(optarg, NULL,0);
 				options->flags |= ( OPT_FROMCMD_MASK | OPT_NUMSET_MASK );
 				break;
 			case 'p':
@@ -100,8 +100,12 @@ int parseOptions(int argc, char * argv[], progOptions_type * options) {
 				break;
 		}
 		
+		if ( g_opt_debug ) printf("Found \"%c\" (or equiv.) with argument %s\n",  currentOption, optarg);
+		
 	}
-
+	
+	if ( g_opt_debug )  printOptions(options, "options");
+	
 	if ( options->flags & OPT_HELPREQ_MASK ) {
 		printf("%s\n", helpText);
 		return OPT_RET_EXIT;
@@ -125,4 +129,51 @@ int parseOptions(int argc, char * argv[], progOptions_type * options) {
 	}
 	
 	return OPT_RET_OK;
+}
+
+void printOptions(const progOptions_type * toPrint, const char * idStr) {
+	char optionsStr[] = "options";
+	
+	const char * optName = ( NULL != idStr ) ? idStr : optionsStr;
+	
+	printf("\nPrinting current state of %s\n:", optName);
+	printf("\t%s.flags:          %08x\n", optName, toPrint->flags);
+	printBitSetting(toPrint->flags, OPT_HELPREQ_MASK, "Help Request");
+	printBitSetting(toPrint->flags, OPT_TEMPLATE_MASK, "Print Template");
+	printBitSetting(toPrint->flags, OPT_FROMCMD_MASK, "From Command");
+	printBitSetting(toPrint->flags, OPT_STARTSET_MASK, "Start Frequency Set");
+	printBitSetting(toPrint->flags, OPT_STOPSET_MASK, "Stop Frequency Set");
+	printBitSetting(toPrint->flags, OPT_NUMSET_MASK, "Number of Frequencies Set");
+	printBitSetting(toPrint->flags, OPT_AMPSET_MASK, "Amplitude Set");
+	printBitSetting(toPrint->flags, OPT_RANDAMP_MASK, "Random Amplitude");
+	printBitSetting(toPrint->flags, OPT_PERIODSET_MASK, "Period Set");
+	printf("\t%s.amplitude:      %g\n", optName, toPrint->amplitude);
+	printf("\t%s.start_f:        %g\n", optName, toPrint->start_f);
+	printf("\t%s.stop_f:         %g\n", optName, toPrint->stop_f);
+	printf("\t%s.num_f:          %d\n", optName, toPrint->num_f);
+	printf("\t%s.sample_period:  %g\n", optName, toPrint->sample_period);
+	printf("\t%s.tooth_period:   %g\n", optName, toPrint->tooth_period);
+	if ( NULL == toPrint->inputPath ) {
+			printf("\t%s.inputPath:      NULL\n", optName);
+	} else {
+			printf("\t%s.inputPath:      %s\n", optName, toPrint->inputPath);
+	}
+	return;
+}
+
+void printBitSetting(uint32_t flags, unsigned int mask, const char * title) {
+	int bitCount = 0;
+	if ( !mask ) {
+		printf("\t\tMask is zero.\n");
+		return;
+	}
+	
+	while( !((mask>>bitCount) & 0x01uL) ) bitCount++;
+	
+	if ( NULL == title ) {
+		printf("\t\tBit %d is %s.\n", bitCount, (mask & flags) ? "set" : "unset");
+	} else {
+		printf("\t\t\"%s\" (bit %d) is %s.\n", title, bitCount, (mask & flags) ? "set" : "unset");
+	}
+	return;
 }
