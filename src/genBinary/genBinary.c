@@ -5,6 +5,7 @@
 #include "genBinary.h"
 #include <errno.h>
 #include <ctype.h>
+#include "../defOptions/defOptions.h"
 
 freqList_ptr blankFreqList() {
 	freqList_ptr newList = malloc(sizeof(freqList_type));
@@ -69,7 +70,8 @@ unsigned int * pointCounts(const freqList_ptr freqList, const double pointInterv
 	const double *		durTable	= freqList->durList;
 	unsigned int *		pointCounts	= NULL;
 	
-	if ( NULL == freqList ) printf("Well there's your problem\n");
+	if ( NULL == freqList ) return NULL;
+	
 	pointCounts = malloc(((size_t) totalSets)*sizeof(unsigned int));
 	if ( NULL == pointCounts ) {
 		perror("pointCounts allocation");
@@ -96,13 +98,13 @@ unsigned char * genPointList(const freqList_ptr freqList, const unsigned int * p
 	for ( i=0; i<freqList->freqCount; i++ ) {
 		totalPoints += *(pointCounts + i);
 	}
-	printf("Filled pointCounts\n");
+	if ( g_opt_debug ) printf("Filled pointCounts\n");
 	
 	pointVals = malloc(sizeof(unsigned char)*totalPoints);
 	if ( NULL == pointVals ) return NULL;
 
 	fillPos = pointVals;
-	printf("Alloc pointVals\n");
+	if ( g_opt_debug ) printf("Alloc pointVals\n");
 	
 	for ( i=0; i<freqList->freqCount; i++ ) {
 		/*
@@ -113,8 +115,8 @@ unsigned char * genPointList(const freqList_ptr freqList, const unsigned int * p
 		fillPos = genWavePts(*(freqTable + i), *(ampTable + i) * lastFlip * 127.0, *(pointCounts + i), pointInterval, fillPos);
 		lastFlip = *(fillPos - 1) < AWG_ZERO_VAL ? 1.0 : -1.0;
 	}
-	printf("Total points after cont. check: %lu\n", totalPoints);
-	printf("last flip: %f\n", lastFlip);
+	if ( g_opt_debug ) printf("Total points after cont. check: %lu\n", totalPoints);
+	if ( g_opt_debug ) printf("last flip: %f\n", lastFlip);
 	if ( lastFlip < 0.0 ) {
 		pointVals = realloc(pointVals, sizeof(unsigned char)*totalPoints*2);
 		if ( NULL == pointVals ) return NULL;
@@ -123,31 +125,31 @@ unsigned char * genPointList(const freqList_ptr freqList, const unsigned int * p
 		totalPoints *=2;
 	}
 	
-	printf("Total points after cont. check: %lu\n", totalPoints);
+	if ( g_opt_debug ) printf("Total points after cont. check: %lu\n", totalPoints);
 	//printf("Mod 32: %d\n",totalPoints%32);
 	
 	if ((totalPoints%32) != 0 ) {
 		numShifts = 1;
 		while ( (totalPoints << numShifts)&0x1F )
 		{
-			printf("Mod 32: %lu\n", (totalPoints << numShifts)%32);
+			if ( g_opt_debug ) printf("Mod 32: %lu\n", (totalPoints << numShifts)%32);
 			numShifts++;
 		}
-		printf("Mod 32: %lu\n", (totalPoints << numShifts)%32);
-		printf("Shift count: %d, to %lu\n", numShifts, totalPoints << numShifts);
+		if ( g_opt_debug ) printf("Mod 32: %lu\n", (totalPoints << numShifts)%32);
+		if ( g_opt_debug ) printf("Shift count: %d, to %lu\n", numShifts, totalPoints << numShifts);
 		
 		pointVals = realloc(pointVals, sizeof(unsigned char)*totalPoints*(1<<numShifts));
 		if ( NULL == pointVals ) return NULL;
 		
 		for (i=0; i<numShifts; i++) {
-			printf("Copy level %d\n",i);
+			if ( g_opt_debug ) printf("Copy level %d\n",i);
 			memcpy(pointVals + (1<<i)*totalPoints, pointVals, sizeof(unsigned char)*(1<<i)*totalPoints);
 		}
 	}
 	
 	
 	*finalCount = (1<<numShifts)*totalPoints;
-	printf("final count %lu\n",*finalCount);
+	if ( !g_opt_quiet ) printf("Final point count %lu\n",*finalCount);
 	return pointVals;
 }
 
@@ -342,7 +344,7 @@ freqList_ptr readSpecFile(const char * inPath) {
 	free(lineBuf);
 	lineBuf = NULL;
 	
-	printf("Processed %lu lines, found %d frequencies.\n", lineNum, listPtr->freqCount);
+	if ( !g_opt_quiet ) printf("Processed %lu lines, found %d frequencies.\n", lineNum, listPtr->freqCount);
 	malloc(128);
 	if ( 0 == listPtr->freqCount ) {
 		fprintf(stderr, "However, we need at least one entry.\n");
@@ -379,7 +381,6 @@ int parseLine(char * lineBuf, freqList_ptr destList) {
 	// Check if expansion is necessary
 	if ( curSize < (curCount + 1) ) {
 		if ( resizeFreqList((curSize + DEFAULT_FREQ_LIST_SIZE), &destList) ) {
-			printf("Weird resizing?");
 			return GEN_BINARY_ERESIZE;
 		}
 		freqBase	= destList->freqList;
@@ -412,7 +413,7 @@ int parseLine(char * lineBuf, freqList_ptr destList) {
 	while ( isspace(*lineBuf) ) lineBuf++;
 	if ( '\0' != *(lineBuf++) ) return GEN_BINARY_EPARSE;
 	
-	printf("Amp %f, Freq %f, Dur %f\n", *(ampBase + curCount), *(freqBase + curCount), *(durBase + curCount));
+	if ( !g_opt_quiet ) printf("Amp %f, Freq %f, Dur %f\n", *(ampBase + curCount), *(freqBase + curCount), *(durBase + curCount));
 	
 	destList->freqCount = curCount + 1;
 	return 0;

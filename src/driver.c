@@ -36,6 +36,11 @@ int main (int argc, char * argv[]) {
 			break;
 	}
 	
+	// This is the earliest you're allowed to print anything to stdout
+	// Because before now we might've been ignoring a --quiet options if we did.
+	
+	// stderr is OK, because I said so.
+	
 	parsedList = readSpecFile(tempPath);
 	if ( NULL == parsedList ) {
 		fprintf(stderr, "Problem parsing file at \"%s\".\n", tempPath);
