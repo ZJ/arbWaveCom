@@ -41,10 +41,18 @@ int main (int argc, char * argv[]) {
 	
 	// stderr is OK, because I said so.
 	
-	parsedList = readSpecFile(tempPath);
-	if ( NULL == parsedList ) {
-		fprintf(stderr, "Problem parsing file at \"%s\".\n", tempPath);
-		return -1;
+	if ( !(OPT_FROMCMD_MASK & myOptions.flags) ) {
+		const char * loadPath = (NULL == myOptions.inputPath) ? tempPath : myOptions.inputPath;
+		if ( !g_opt_quiet ) printf("Attempting to load frequency list from file: \"%s\".\n", loadPath);
+		parsedList = readSpecFile(loadPath);
+		if ( NULL == parsedList ) {
+			fprintf(stderr, "Problem parsing file at \"%s\".\n", loadPath);
+			return -1;
+		}
+	} else {
+		// Loading from frigging cmdline
+		printf("Loading from the frigtastic cmdline\n");
+		return 0; // Temp until auto-building parsedList is implemented
 	}
 	
 	countList = pointCounts(parsedList, interval);
