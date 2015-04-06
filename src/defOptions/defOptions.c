@@ -123,7 +123,7 @@ int parseOptions(int argc, char * argv[], progOptions_type * options) {
 		return OPT_RET_EXIT;
 	}
 	
-	if ( !((options->flags & OPT_ALLSET_MASK) == OPT_ALLSET_MASK) ) {
+	if ( (options->flags & OPT_FROMCMD_MASK) && !((options->flags & OPT_ALLSET_MASK) == OPT_ALLSET_MASK) ) {
 		printf("ERROR:\t" ANY_ALL_TEXT);
 		return OPT_RET_ERR;		
 	}
