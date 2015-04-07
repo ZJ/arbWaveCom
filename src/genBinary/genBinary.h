@@ -48,22 +48,38 @@
  *
  */
 
-int allocSubLists(freqList_ptr toSet, unsigned int nFreqs);
-int setFreqList(freqList_ptr toSet, const double start_f, const double stop_f);
-int setFixedAmp(freqList_ptr toSet, const double amplitude);
-int setFixedDur(freqList_ptr toSet, const double duration);
-int setRandAmp(freqList_ptr toSet);
-unsigned int pointsToHalfCycle(double targetDuration, double pointInterval, double frequency);
-unsigned char * genPointList(const freqList_ptr freqList, const unsigned int * pointCounts, const double pointInterval, unsigned long * finalCount);
-unsigned char * genWavePts(double freq, double amp, unsigned int numPts, double pointInterval, unsigned char * startPtr);
-int writeToFile(const char * rootName, const unsigned char * ptsList, const unsigned long numPtrs);
-ssize_t myGetLine(char ** bufferPtr, size_t * bufferSize, FILE * fp);
-void freeFreqList(freqList_ptr toFree);
-int resizeFreqList(unsigned int newSize, freqList_ptr * toResize);
-freqList_ptr readSpecFile(const char * inPath);
-int parseLine(char * lineBuf, freqList_ptr destList);
 freqList_ptr blankFreqList();
+ 
+void freeFreqList(freqList_ptr toFree);
+
+int allocSubLists(freqList_ptr toSet, unsigned int nFreqs);
+
+int setFreqList(freqList_ptr toSet, const double start_f, const double stop_f);
+
+int setFixedAmp(freqList_ptr toSet, const double amplitude);
+
+int setRandAmp(freqList_ptr toSet);
+
+int setFixedDur(freqList_ptr toSet, const double duration);
+
+unsigned int pointsToHalfCycle(double targetDuration, double pointInterval, double frequency);
+
 unsigned int * pointCounts(const freqList_ptr freqList, const double pointInterval);
+
+unsigned char * genPointList(const freqList_ptr freqList, const unsigned int * pointCounts, const double pointInterval, unsigned long * finalCount);
+
+unsigned char * genWavePts(double freq, double amp, unsigned int numPts, double pointInterval, unsigned char * startPtr);
+
+ssize_t myGetLine(char ** bufferPtr, size_t * bufferSize, FILE * fp);
+
+int resizeFreqList(unsigned int newSize, freqList_ptr * toResize);
+
+freqList_ptr readSpecFile(const char * inPath);
+
+int parseLine(char * lineBuf, freqList_ptr destList);
+
+int writeToFile(const char * rootName, const unsigned char * ptsList, const unsigned long numPtrs);
+
 int writeSummaryFile(const char * rootName, const freqList_ptr freqList, const unsigned int * pointCounts, const double pointInterval);
 
 #endif
