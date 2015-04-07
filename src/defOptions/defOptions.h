@@ -26,6 +26,10 @@ extern int g_opt_quiet;
 #define OPT_NUMSET_MASK		(1u << 12)
 #define OPT_ALLSET_MASK		( OPT_STARTSET_MASK | OPT_STOPSET_MASK | OPT_AMPSET_MASK | OPT_PERIODSET_MASK | OPT_NUMSET_MASK )
 
+#define TEMPLATE_FILENAME "template.txt"
+#define INPUT_FILENAME "freqSpec.txt"
+#define OUTPUT_ROOT "awgOutput"
+
 typedef struct progOptions {
 	uint32_t		flags;
 	double			amplitude;

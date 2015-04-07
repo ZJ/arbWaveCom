@@ -12,8 +12,8 @@ int main (int argc, char * argv[]) {
 	int				checkStatus	= 0;
 	unsigned long	finalCount = 0;
 	double			clock_period;
-	const char baseName[] = "testFile";
-	const char tempPath[] = "demoFile.txt";
+	const char baseName[] = OUTPUT_ROOT;
+	const char tempPath[] = INPUT_FILENAME;
 	
 	progOptions_type	myOptions = OPT_INIT_VAL;
 	
