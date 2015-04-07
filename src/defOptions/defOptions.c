@@ -1,9 +1,9 @@
 #include <getopt.h>
 #include "defOptions_int.h"
 #include "defOptions.h"
-#include "string.h"
-#include "stdlib.h"
-#include "stdio.h"
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include "templateContents.h"
 
 #define  ANY_ALL_TEXT "If any of -s, -e, -n, and -p are supplied, they all must be supplied.\n"
