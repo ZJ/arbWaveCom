@@ -453,7 +453,7 @@ int parseLine(char * lineBuf, freqList_ptr destList) {
 	return 0;
 }
 
-int writeToFile(const char * rootName, const unsigned char * ptsList, const unsigned long numPtrs) {
+int writeToFile(const char * rootName, const unsigned char * ptsList, const unsigned long numPtrs, const double clockFreq) {
 	FILE * pointsFile = NULL;
 	char *			fileName		= NULL;
 	size_t			fileNameLen;
@@ -474,6 +474,7 @@ int writeToFile(const char * rootName, const unsigned char * ptsList, const unsi
 	pointsFile = fopen(fileName, "w");
 	free(fileName);
 	if ( NULL == pointsFile ) return -1;
+	fprintf(pointsFile, "CLOCK:FREQUENCY %fMHz\n", clockFreq);
 	fprintf(pointsFile, "DATA:DESTINATION \"GPIB.WFM\"\n");
 	fprintf(pointsFile, "DATA:WIDTH 1\n");
 	fprintf(pointsFile, "CURVE ");
@@ -490,7 +491,7 @@ int writeToFile(const char * rootName, const unsigned char * ptsList, const unsi
 	return 0;
 }
 
-int writeSummaryFile(const char * rootName, const freqList_ptr freqList, const unsigned int * pointCounts, const double pointInterval) {
+int writeSummaryFile(const char * rootName, const freqList_ptr freqList, const unsigned int * pointCounts, const double clock_freq) {
 	FILE *			sumFile			= NULL;
 	char *			fileName		= NULL;
 	size_t			fileNameLen;
@@ -499,6 +500,7 @@ int writeSummaryFile(const char * rootName, const freqList_ptr freqList, const u
 	const unsigned int entries		= freqList->freqCount;
 	const double *	freqTable		= freqList->freqList;
 	const double *	ampTable		= freqList->ampList;
+	const double 	clock_period	= 1000.0/clock_freq;
 	
 	fileNameLen = strlen(rootName) + strlen(fileNameSuf);
 	
@@ -514,10 +516,13 @@ int writeSummaryFile(const char * rootName, const freqList_ptr freqList, const u
 		return -1;
 	}
 	
+	
+	
 	fprintf(sumFile, "Frequency pattern summary for %s:\n", fileName);
 	for( i=0; i<entries; i++ ) {
-		fprintf(sumFile, "\t%f amplitude %f MHz for %f ns.\n", *(ampTable + i), *(freqTable + i), ((double)(*(pointCounts + i)))*pointInterval);
+		fprintf(sumFile, "\t%f amplitude %f MHz for %f ns (%d samples).\n", *(ampTable + i), *(freqTable + i), ((double)(*(pointCounts + i)))*clock_period, *(pointCounts + i));
 	}
+	fprintf(sumFile, "Sample clock @ %f MHz for a period of %f ns.\n", clock_freq, clock_period);
 	fclose(sumFile);
 	
 	free(fileName);

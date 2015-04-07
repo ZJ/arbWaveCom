@@ -78,8 +78,8 @@ freqList_ptr readSpecFile(const char * inPath);
 
 int parseLine(char * lineBuf, freqList_ptr destList);
 
-int writeToFile(const char * rootName, const unsigned char * ptsList, const unsigned long numPtrs);
+int writeToFile(const char * rootName, const unsigned char * ptsList, const unsigned long numPtrs, const double clockFreq);
 
-int writeSummaryFile(const char * rootName, const freqList_ptr freqList, const unsigned int * pointCounts, const double pointInterval);
+int writeSummaryFile(const char * rootName, const freqList_ptr freqList, const unsigned int * pointCounts, const double clock_freq);
 
 #endif

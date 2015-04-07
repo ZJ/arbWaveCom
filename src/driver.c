@@ -11,6 +11,7 @@ int main (int argc, char * argv[]) {
 	unsigned char *	pointsList	= NULL;
 	int				checkStatus	= 0;
 	unsigned long	finalCount = 0;
+	double			clock_period;
 	const char baseName[] = "testFile";
 	const char tempPath[] = "demoFile.txt";
 	
@@ -67,27 +68,27 @@ int main (int argc, char * argv[]) {
 			setFixedAmp(parsedList, myOptions.amplitude);
 		}
 	}
-	
-	countList = pointCounts(parsedList, myOptions.sample_period);
+	clock_period = 1000.0/myOptions.clock_freq;
+	countList = pointCounts(parsedList, clock_period);
 	if ( NULL == countList ) {
 		fprintf(stderr, "Problem counting points.\n");
 		return -1;
 	}
 		
-	checkStatus = writeSummaryFile(baseName, parsedList, countList, myOptions.sample_period);
+	checkStatus = writeSummaryFile(baseName, parsedList, countList, myOptions.clock_freq);
 	if ( checkStatus ) {
 		fprintf(stderr, "Problem writing summary file.\n");
 		return -1;
 	}
 	
-	pointsList = genPointList(parsedList, countList, myOptions.sample_period, &finalCount);
+	pointsList = genPointList(parsedList, countList, clock_period, &finalCount);
 	if ( NULL == pointsList ) {
 		fprintf(stderr, "Problem generating points.\n");
 		return -1;
 	}
 	
 	_fmode = _O_BINARY; // Turn off line ending conversion.
-	checkStatus = writeToFile(baseName, pointsList, finalCount);
+	checkStatus = writeToFile(baseName, pointsList, finalCount, myOptions.clock_freq);
 	if ( checkStatus ) {
 		fprintf(stderr, "Problem writing points file.\n");
 		return -1;

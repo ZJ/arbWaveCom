@@ -32,11 +32,11 @@ typedef struct progOptions {
 	double			start_f;
 	double			stop_f;
 	unsigned int	num_f;
-	double			sample_period;
+	double			clock_freq;
 	double			tooth_period;
 	char *			inputPath;
 } progOptions_type;
-#define OPT_INIT_VAL {0, 0.0, 0.0, 0.0, 0, 1000.0/1024.0, 0.0, NULL}
+#define OPT_INIT_VAL {0, 0.0, 0.0, 0.0, 0, 1024.0, 0.0, NULL}
 
 int parseOptions(int argc, char * argv[], progOptions_type * options);
 void printOptions(const progOptions_type * toPrint, const char * idStr);

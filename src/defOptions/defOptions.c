@@ -16,7 +16,7 @@
 
 #define TEMPLATE_FILENAME "template.txt"
 
-const char helpText[] = "Usage:  genAWGpattern" SUFFIX_EXE " [options]\n\n        genAWGpattern" SUFFIX_EXE " [options] -s <freq> -e <freq> -n <count>\n		                    -p <period> [-r|-a <amplitude>]\n\nOptions:\n  -h | --help           Displays this information\n  -t | --template       Output blank template to \"demoFile.txt\"\n\n  -d | --debug          Output debug information.\n  -q | --quiet          Suppress normal output.  Does not suppress debug output\n\n  -i | --input-file     Path to an input file\n  -f | --clock-freq     Sets the target sample clock on the AWG\n\nCommand Line Pulse Specification:\n  WARNING: " ANY_ALL_TEXT "  -s | --start-freq     Lowest frequency in pulse [MHz]\n  -e | --end-freq       High frequency in pulse [MHz]\n  -n | --number-freq    Total number of pulse teeth\n  -p | --tooth-period   Time per tooth [ns]\n  -r | --random-amp     Randomly select amplitude for each tooth\n  -a | --fixed-amp      Same amplitude for every tooth (range 0 to 1)\n\n\nGenerates a file whose content is suitable for streaming directly over a serial\nconnection to an AWG2040 to program it with a specified frequency pulse-train.\nPulse parameters are read in from 'demoFile.txt' (Unless overridden by the '-i'\noption), OR are specified using the 'Command Line Pulse' set of options.\n\nIf both '-i' and any of the 'Command Line Pulse' set are supplied, the last one\nwill be honored.  Likewise the last of any repeated options are honored.\n";
+const char helpText[] = "Usage:  genAWGpattern" SUFFIX_EXE " [options]\n\n        genAWGpattern" SUFFIX_EXE " [options] -s <freq> -e <freq> -n <count>\n		                    -p <period> [-r|-a <amplitude>]\n\nOptions:\n  -h | --help           Displays this information\n  -t | --template       Output blank template to \"demoFile.txt\"\n\n  -d | --debug          Output debug information.\n  -q | --quiet          Suppress normal output.  Does not suppress debug output\n\n  -i | --input-file     Path to an input file\n  -f | --clock-freq     MHz. Sets the target sample clock on the AWG\n\nCommand Line Pulse Specification:\n  WARNING: " ANY_ALL_TEXT "  -s | --start-freq     MHz. Lowest frequency in pulse\n  -e | --end-freq       MHz. High frequency in pulse\n  -n | --number-freq    Total number of pulse teeth\n  -p | --tooth-period   ns. Time per tooth\n  -r | --random-amp     Randomly select amplitude for each tooth from [0.1, 1.0]\n  -a | --fixed-amp      Same amplitude for every tooth (range 0 to 1)\n\n\nGenerates a file whose content is suitable for streaming directly over a serial\nconnection to an AWG2040 to program it with a specified frequency pulse-train.\nPulse parameters are read in from 'demoFile.txt' (Unless overridden by the '-i'\noption), OR are specified using the 'Command Line Pulse' set of options.\n\nIf both '-i' and any of the 'Command Line Pulse' set are supplied, the last one\nwill be honored.  Likewise the last of any repeated options are honored.\n";
 
 int parseOptions(int argc, char * argv[], progOptions_type * options) {
 	int currentOption = -1;
@@ -60,7 +60,7 @@ int parseOptions(int argc, char * argv[], progOptions_type * options) {
 				options->flags |= ( OPT_FROMCMD_MASK | OPT_STOPSET_MASK );
 				break;
 			case 'f':
-				options->sample_period = 1000.0/strtod(optarg, NULL);
+				options->clock_freq = strtod(optarg, NULL);
 				break;
 			case 'h':
 				options->flags |= OPT_HELPREQ_MASK;
@@ -167,7 +167,7 @@ void printOptions(const progOptions_type * toPrint, const char * idStr) {
 	printf("\t%s.start_f:        %g\n", optName, toPrint->start_f);
 	printf("\t%s.stop_f:         %g\n", optName, toPrint->stop_f);
 	printf("\t%s.num_f:          %d\n", optName, toPrint->num_f);
-	printf("\t%s.sample_period:  %g\n", optName, toPrint->sample_period);
+	printf("\t%s.clock_freq:     %g\n", optName, toPrint->clock_freq);
 	printf("\t%s.tooth_period:   %g\n", optName, toPrint->tooth_period);
 	if ( NULL == toPrint->inputPath ) {
 			printf("\t%s.inputPath:      NULL\n", optName);
