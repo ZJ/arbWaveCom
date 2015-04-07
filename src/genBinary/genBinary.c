@@ -5,6 +5,7 @@
 #include "genBinary.h"
 #include <errno.h>
 #include <ctype.h>
+#include <time.h>
 #include "../defOptions/defOptions.h"
 
 freqList_ptr blankFreqList() {
@@ -29,33 +30,66 @@ void freeFreqList(freqList_ptr toFree) {
 	return;
 }	
 
-freqList_ptr genFreqList(double start_f, double stop_f, unsigned int freqCount) {
-	freqList_ptr	newList		= NULL;
-	double *		listPtr		= NULL;
-	double			freqSpacing	= 0.0;
-	unsigned int	i = 0;
+int allocSubLists(freqList_ptr toSet, unsigned int nFreqs) {
+	toSet->freqList = malloc(sizeof(double)*nFreqs);
+	if ( NULL == toSet->freqList ) return -1;
+
+	toSet->ampList = malloc(sizeof(double)*nFreqs);
+	if ( NULL == toSet->ampList ) return -1;
+
+	toSet->durList = malloc(sizeof(double)*nFreqs);
+	if ( NULL == toSet->durList ) return -1;
 	
-	if ( freqCount <= 1 ) return NULL; // 0 or 1 frequencies is silly
+	toSet->freqCount	= nFreqs;
+	toSet->actualSize	= nFreqs;
+	return 0;
+}
+
+int setFreqList(freqList_ptr toSet, const double start_f, const double stop_f) {
+	double *			listPtr 	= toSet->freqList;
+	double				freqSpacing	= 0.0;
+	const unsigned int	nFreqs		= toSet->freqCount;
+	unsigned int		i			= 0;
 	
-	if ( NULL == (newList = malloc(sizeof(freqList_type)) ) ) return NULL;
+	freqSpacing = (stop_f - start_f)/((double) (nFreqs - 1));
 	
-	newList->freqCount	= freqCount;
-	listPtr				= malloc(sizeof(double)*freqCount);
-	
-	if ( NULL == listPtr ) {
-		free(newList);
-		return NULL;
-	}
-	
-	newList->freqList = listPtr;
-	
-	freqSpacing = (stop_f - start_f)/((double) (freqCount - 1));
+	for (i = 1; i < nFreqs-1; i++) listPtr[i] = start_f + i*freqSpacing;
+
 	listPtr[0] = start_f;
-	listPtr[freqCount - 1] = stop_f;
+	listPtr[nFreqs - 1] = stop_f;
 	
-	for (i = 1; i < freqCount-1; i++) listPtr[i] = start_f + i*freqSpacing;
+	return 0;
+}
+
+int setFixedAmp(freqList_ptr toSet, const double amplitude) {
+	double *			listPtr 	= toSet->ampList;
+	const unsigned int	nFreqs		= toSet->freqCount;
+	unsigned int		i			= 0;
 	
-	return newList;
+	for (i = 0; i < nFreqs; i++) listPtr[i] = amplitude;
+
+	return 0;
+}
+
+int setRandAmp(freqList_ptr toSet) {
+	double *			listPtr 	= toSet->ampList;
+	const unsigned int	nFreqs		= toSet->freqCount;
+	unsigned int		i			= 0;
+	
+	srand((unsigned) time(NULL));
+	for (i = 0; i < nFreqs; i++) listPtr[i] = 114.0*((double) rand())/(127.0*(double) RAND_MAX)+13.0/127.0;
+
+	return 0;
+}
+
+int setFixedDur(freqList_ptr toSet, const double duration) {
+	double *			listPtr 	= toSet->durList;
+	const unsigned int	nFreqs		= toSet->freqCount;
+	unsigned int		i			= 0;
+	
+	for (i = 0; i < nFreqs; i++) listPtr[i] = duration;
+
+	return 0;
 }
 
 unsigned int pointsToHalfCycle(double targetDuration, double pointInterval, double frequency) {

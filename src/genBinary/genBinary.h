@@ -48,8 +48,11 @@
  *
  */
 
- 
-freqList_ptr genFreqList(double start_f, double stop_f, unsigned int freqCount);
+int allocSubLists(freqList_ptr toSet, unsigned int nFreqs);
+int setFreqList(freqList_ptr toSet, const double start_f, const double stop_f);
+int setFixedAmp(freqList_ptr toSet, const double amplitude);
+int setFixedDur(freqList_ptr toSet, const double duration);
+int setRandAmp(freqList_ptr toSet);
 unsigned int pointsToHalfCycle(double targetDuration, double pointInterval, double frequency);
 unsigned char * genPointList(const freqList_ptr freqList, const unsigned int * pointCounts, const double pointInterval, unsigned long * finalCount);
 unsigned char * genWavePts(double freq, double amp, unsigned int numPts, double pointInterval, unsigned char * startPtr);

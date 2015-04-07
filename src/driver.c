@@ -10,14 +10,12 @@ int main (int argc, char * argv[]) {
 	unsigned int *	countList	= NULL;
 	unsigned char *	pointsList	= NULL;
 	int				checkStatus	= 0;
-	const double	interval = 1000.0/1024.0;
 	unsigned long	finalCount = 0;
 	const char baseName[] = "testFile";
 	const char tempPath[] = "demoFile.txt";
 	
 	progOptions_type	myOptions = OPT_INIT_VAL;
 	
-	_fmode = _O_BINARY;
 	
 	checkStatus = parseOptions(argc, argv, &myOptions);
 	switch (checkStatus) {
@@ -51,28 +49,44 @@ int main (int argc, char * argv[]) {
 		}
 	} else {
 		// Loading from frigging cmdline
-		printf("Loading from the frigtastic cmdline\n");
-		return 0; // Temp until auto-building parsedList is implemented
+		parsedList = blankFreqList();
+		if ( NULL == parsedList ) {
+			fprintf(stderr, "Problem allocating frequency list\n");
+			return -1;
+		}
+		if ( allocSubLists(parsedList, myOptions.num_f) ) {
+			fprintf(stderr, "Problem allocating frequency list\n");
+			return -1;
+		}
+		setFreqList(parsedList, myOptions.start_f, myOptions.stop_f);
+		setFixedDur(parsedList, myOptions.tooth_period);
+		if ( OPT_RANDAMP_MASK & myOptions.flags ) {
+			// Random amplitudes
+			setRandAmp(parsedList);
+		} else {
+			setFixedAmp(parsedList, myOptions.amplitude);
+		}
 	}
 	
-	countList = pointCounts(parsedList, interval);
+	countList = pointCounts(parsedList, myOptions.sample_period);
 	if ( NULL == countList ) {
 		fprintf(stderr, "Problem counting points.\n");
 		return -1;
 	}
 		
-	checkStatus = writeSummaryFile(baseName, parsedList, countList, interval);
+	checkStatus = writeSummaryFile(baseName, parsedList, countList, myOptions.sample_period);
 	if ( checkStatus ) {
 		fprintf(stderr, "Problem writing summary file.\n");
 		return -1;
 	}
 	
-	pointsList = genPointList(parsedList, countList, interval, &finalCount);
+	pointsList = genPointList(parsedList, countList, myOptions.sample_period, &finalCount);
 	if ( NULL == pointsList ) {
 		fprintf(stderr, "Problem generating points.\n");
 		return -1;
 	}
 	
+	_fmode = _O_BINARY; // Turn off line ending conversion.
 	checkStatus = writeToFile(baseName, pointsList, finalCount);
 	if ( checkStatus ) {
 		fprintf(stderr, "Problem writing points file.\n");
