@@ -474,13 +474,13 @@ int writeToFile(const char * rootName, const unsigned char * ptsList, const unsi
 	pointsFile = fopen(fileName, "w");
 	free(fileName);
 	if ( NULL == pointsFile ) return -1;
-	fprintf(pointsFile, "CLOCK:FREQUENCY %fMHz\n", clockFreq);
 	fprintf(pointsFile, "DATA:DESTINATION \"GPIB.WFM\"\n");
 	fprintf(pointsFile, "DATA:WIDTH 1\n");
 	fprintf(pointsFile, "CURVE ");
 	fprintf(pointsFile, "#%d%lu", numLen, numPtrs);
 	fwrite(ptsList, sizeof(unsigned char), numPtrs, pointsFile);
 	fprintf(pointsFile, "\n");
+	fprintf(pointsFile, "CLOCK:FREQUENCY %fMHz\n", clockFreq);
 	fprintf(pointsFile, "WFMP?\n");
 	if ( ferror(pointsFile) ) {
 		fclose(pointsFile);
