@@ -9,10 +9,12 @@
 #define DEFOPTIONS_H
 
 #include <inttypes.h>
+#include "filenames.h"
 
 #ifndef DEFOPTIONS_INT_H
 extern int g_opt_debug; //!< Whether -d/--debug has been set. 0 is unset, 1 is set.
 extern int g_opt_quiet; //!< Whether -q/--quiet has been set. 0 is unset, 1 is set.
+extern const char helpText[]; //!< The help text to display for user-requested help.
 #endif
 
 /*!
@@ -51,18 +53,6 @@ extern int g_opt_quiet; //!< Whether -q/--quiet has been set. 0 is unset, 1 is s
 
 /*! @} */
 
-/*!
- * @defgroup FileNames Expected filenames for I/O
- * @brief File names are hard-coded here for use throughout the program
- * @{
- */
-
-#define TEMPLATE_FILENAME "template.txt" //!< File to output the frequency specification template to.
-#define INPUT_FILENAME "freqSpec.txt" //!< File to read for frequency specification input.
-#define OUTPUT_ROOT "awgOutput" //!< File name stem used 
-
-/*! @} */
-
 /*! @brief Structure to hold values for command-line options.
  *
  * Expected initialization found in #OPT_INIT_VAL
@@ -79,6 +69,9 @@ typedef struct progOptions {
 	char *			inputPath; //!< C-string for a command-line specified frequency specification file path.
 } progOptions_type;
 #define OPT_INIT_VAL {0, 0.0, 0.0, 0.0, 0, 1024.0, 0.0, NULL} //!< Initialization data for a #progOptions instantiation.
+
+
+
 
 int parseOptions(int argc, char * argv[], progOptions_type * options);
 void printOptions(const progOptions_type * toPrint, const char * idStr);

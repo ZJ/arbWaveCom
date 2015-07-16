@@ -6,16 +6,6 @@
 #include <stdio.h>
 #include "templateContents.h"
 
-#define  ANY_ALL_TEXT "If any of -s, -e, -n, and -p are supplied, they all must be supplied.\n"
-
-#ifdef _WIN32
-#define SUFFIX_EXE ".exe"
-#else
-#define SUFFIX_EXE ""
-#endif
-
-const char helpText[] = "Usage:  genAWGpattern" SUFFIX_EXE " [options]\n\n        genAWGpattern" SUFFIX_EXE " [options] -s <freq> -e <freq> -n <count>\n		                    -p <period> [-r|-a <amplitude>]\n\nOptions:\n  -h | --help           Displays this information\n  -t | --template       Output blank template to " TEMPLATE_FILENAME "\n\n  -d | --debug          Output debug information.\n  -q | --quiet          Suppress normal output.  Does not suppress debug output\n\n  -i | --input-file     Path to an input file\n  -f | --clock-freq     MHz. Sets the target sample clock on the AWG\n\nCommand Line Pulse Specification:\n  WARNING: " ANY_ALL_TEXT "  -s | --start-freq     MHz. Lowest frequency in pulse\n  -e | --end-freq       MHz. High frequency in pulse\n  -n | --number-freq    Total number of pulse teeth\n  -p | --tooth-period   ns. Time per tooth\n  -r | --random-amp     Randomly select amplitude for each tooth from [0.1, 1.0]\n  -a | --fixed-amp      Same amplitude for every tooth (range 0 to 1)\n\n\nGenerates a file whose content is suitable for streaming directly over a serial\nconnection to an AWG2040 to program it with a specified frequency pulse-train.\nPulse parameters are read in from '" INPUT_FILENAME "' (Unless overridden by the '-i'\noption), OR are specified using the 'Command Line Pulse' set of options.\n\nIf both '-i' and any of the 'Command Line Pulse' set are supplied, the last one\nwill be honored.  Likewise the last of any repeated options are honored.\n";
-
 int parseOptions(int argc, char * argv[], progOptions_type * options) {
 	int currentOption = -1;
 	int errCount = 0;
