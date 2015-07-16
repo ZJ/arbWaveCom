@@ -516,8 +516,6 @@ int writeSummaryFile(const char * rootName, const freqList_ptr freqList, const u
 		return -1;
 	}
 	
-	
-	
 	fprintf(sumFile, "Frequency pattern summary for %s:\n", fileName);
 	for( i=0; i<entries; i++ ) {
 		fprintf(sumFile, "\t%f amplitude %f MHz for %f ns (%d samples).\n", *(ampTable + i), *(freqTable + i), ((double)(*(pointCounts + i)))*clock_period, *(pointCounts + i));
