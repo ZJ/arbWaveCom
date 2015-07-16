@@ -33,8 +33,10 @@ int g_opt_quiet = 0; //!< Whether -q/--quiet has been set. 0 is unset, 1 is set.
  *
  * The full text of the help message is printed here, including whatever platform-dependent changes need to be made.
  * The text also depends on #SUFFIX_EXE, #TEMPLATE_FILENAME, #ANY_ALL_TEXT, and #INPUT_FILENAME.
+ * 
+ * @showinitializer
  */
-const char helpText[]="Usage:  genAWGpattern" SUFFIX_EXE " [options]\n\
+const char helpText[] = "Usage:  genAWGpattern" SUFFIX_EXE " [options]\n\
 \n\
         genAWGpattern" SUFFIX_EXE " [options] -s <freq> -e <freq> -n <count>\n\
 		-p <period> [-r|-a <amplitude>]\n\
