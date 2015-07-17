@@ -128,7 +128,8 @@ unsigned char * genPointList(const freqList_ptr freqList, const unsigned int * p
 	unsigned char *	pointVals	= NULL;
 	unsigned char * fillPos		= NULL;
 	double 			lastFlip	= 1.0;
-
+	
+	// Allocate an array big enough for the whole waveform, single-pass
 	for ( i=0; i<freqList->freqCount; i++ ) {
 		totalPoints += *(pointCounts + i);
 	}
@@ -136,32 +137,32 @@ unsigned char * genPointList(const freqList_ptr freqList, const unsigned int * p
 	
 	pointVals = malloc(sizeof(unsigned char)*totalPoints);
 	if ( NULL == pointVals ) return NULL;
-
+	
+	// Generate the points for each pulse in the train
 	fillPos = pointVals;
 	if ( g_opt_debug ) printf("Alloc pointVals\n");
 	
 	for ( i=0; i<freqList->freqCount; i++ ) {
-		/*
-		printf("*(freqList->freqList + i) = %f\n",*(freqList->freqList + i));
-		printf("*(freqList->ampList + i) = %f\n",*(freqList->ampList + i));
-		printf("*(pointCounts + i) = %d\n",*(pointCounts + i));
-		*/
 		fillPos = genWavePts(*(freqTable + i), *(ampTable + i) * lastFlip * 127.0, *(pointCounts + i), pointInterval, fillPos);
 		lastFlip = *(fillPos - 1) < AWG_ZERO_VAL ? 1.0 : -1.0;
 	}
 	if ( g_opt_debug ) printf("Total points after cont. check: %lu\n", totalPoints);
+	
+	// Check if the end of the last pulse will be continuous when the waveform repeats
+	// If not, duplicate it, flip it, and attach it to the end.
 	if ( g_opt_debug ) printf("last flip: %f\n", lastFlip);
 	if ( lastFlip < 0.0 ) {
 		pointVals = realloc(pointVals, sizeof(unsigned char)*totalPoints*2);
 		if ( NULL == pointVals ) return NULL;
 		
-		for (i=0; i<totalPoints; i++) *(pointVals + totalPoints + i) = *(pointVals + i) * -1.0;
+		// TODO: WTF is going on here?  How does this do anything that makes sense?
+		for (i=0; i<totalPoints; i++) *(pointVals + totalPoints + i) = (-1 * (int)*(pointVals + i)) + (2 * AWG_ZERO_VAL);
 		totalPoints *=2;
 	}
 	
 	if ( g_opt_debug ) printf("Total points after cont. check: %lu\n", totalPoints);
-	//printf("Mod 32: %d\n",totalPoints%32);
 	
+	// Duplicate the waveform as often as necessary to make the total length a multiple of 32.
 	if ((totalPoints%32) != 0 ) {
 		numShifts = 1;
 		while ( (totalPoints << numShifts)&0x1F )
@@ -181,7 +182,6 @@ unsigned char * genPointList(const freqList_ptr freqList, const unsigned int * p
 		}
 	}
 	
-	
 	*finalCount = (1<<numShifts)*totalPoints;
 	if ( !g_opt_quiet ) printf("Final point count %lu\n",*finalCount);
 	return pointVals;
@@ -189,10 +189,8 @@ unsigned char * genPointList(const freqList_ptr freqList, const unsigned int * p
 
 unsigned char * genWavePts(double freq, double amp, unsigned int numPts, double pointInterval, unsigned char * startPtr) {
 	unsigned int i = 0;
-	//printf("Made it inside the function, what is even????????");
 	for ( i=0; i < numPts; i++ ) {
 		double point = amp * sin(freq * ((double) i) * pointInterval * TWO_PI * 0.001) + ((double) AWG_ZERO_VAL);
-		//printf("%f, %f -> %d\n",amp * sin(freq * ((double) i) * pointInterval * TWO_PI), point, (unsigned char) round(point));
 		*(startPtr + i) = round(point);
 	}
 	return (startPtr + numPts);
