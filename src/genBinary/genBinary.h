@@ -120,7 +120,8 @@ typedef freqList_type * freqList_ptr;  //!< Pointer to a #freqList
  *
  * Default values are 0 or NULL, as appropriate.
  *
- * @return A pointer to the newly allocated freqList, otherwise a NULL pointer on failure.
+ * @return A pointer to the newly allocated freqList
+ * @return NULL pointer on failure.
  */
 freqList_ptr blankFreqList();
  
@@ -141,7 +142,8 @@ void freeFreqList(freqList_ptr toFree);
  *
  * @param[inout] toSet Pointer to the freqList whose arrays are being allocated.
  * @param[in] nFreqs The length of the arrays to allocate.
- * @return 0 on success, -1 on failure.
+ * @return 0 on success
+ * @return -1 on failure.
  */
 int allocSubLists(freqList_ptr toSet, unsigned int nFreqs);
 
@@ -157,120 +159,196 @@ int allocSubLists(freqList_ptr toSet, unsigned int nFreqs);
  */
 int setFreqList(freqList_ptr toSet, const double start_f, const double stop_f);
 
-/*!	@brief 
+/*!	@brief Sets the amplitude of every pulse.
  *
- * <details>
+ * Number of pulses is pulled from toSet's #freqList::freqCount member.
  *
- * @param[inout] toSet <descriptions>
+ * @param[inout] toSet Pointer to the freqList to change.
+ * @param[in] amplitude The value of the amplitude to use.
  * @return 0, always.
  */
 int setFixedAmp(freqList_ptr toSet, const double amplitude);
 
-/*!	@brief 
+/*!	@brief Sets every pulse to a random amplitude.
  *
- * <details>
+ * Number of pulses is pulled from toSet's #freqList::freqCount member.
  *
- * @param[inout] <name> <descriptions>
- * @return <description>
+ * Amplitudes are chosen on the interval [0.1, 1.0] (or [13, 127]).
+ * Uses rand() and calls srand( time(NULL)) for random number generation.
+ *
+ * @param[inout] toSet Pointer to the freqList to change.
+ * @return 0, always
  */
 int setRandAmp(freqList_ptr toSet);
 
-/*!	@brief 
+/*!	@brief Sets the duration of every pulse to the same value.
  *
- * <details>
+ * Number of pulses is pulled from toSet's #freqList::freqCount member.
  *
- * @param[inout] <name> <descriptions>
- * @return <description>
+ * @param[inout] toSet Pointer to the freqList to change.
+ * @param[in] duration Duration of each pulse, in ns.
+ * @return 0, always
  */
 int setFixedDur(freqList_ptr toSet, const double duration);
 
-/*!	@brief 
+/*!	@brief Find the number of points that finishes a half cycle closest to a target duration.
  *
- * <details>
+ * This allows us to always change frequencies at a zero crossing.
+ * This makes phase continuity is easy to enforce, even with varying amplitudes.
+ * Additionally, the last point will always be before the zero crossing,
+ * so the first point of the next pulse will never result in discontinuity.
  *
- * @param[inout] <name> <descriptions>
- * @return <description>
+ * @param[in] targetDuration How long we'd like the pulse to last, in ns.
+ * @param[in] pointInterval The duration of an individual output sample, in ns.
+ * @param[in] frequency The frequency for this pulse, in MHz.
+ * @return The number of output samples to complete a half-cycle nearest the targetDuration.
  */
 unsigned int pointsToHalfCycle(double targetDuration, double pointInterval, double frequency);
 
-/*!	@brief 
+/*!	@brief Allocates an array holding the number of samples for every pulse.
  *
- * <details>
+ * Utilizes information in freqList to allocate an array, the fills it
+ * via calls to pointsToHalfCycle().
  *
- * @param[inout] <name> <descriptions>
- * @return <description>
+ * @param[in] freqList A pointer to the the #freqList describing the pulse train.
+ * @param[in] pointInterval The output sample period being used, in ns.
+ * @return A pointer to the array of points on success
+ * @return NULL on failure.
  */
 unsigned int * pointCounts(const freqList_ptr freqList, const double pointInterval);
 
-/*!	@brief 
+/*!	@brief Generates the full waveform, including continuity and length checks.
  *
- * <details>
+ * Takes the pulse description and other key parameters and generates all the output samples.
+ * Because we require continuity of the function and its derivative, we check for the final
+ * slope, and duplicate and flip the entire waveform if necessary.
  *
- * @param[inout] <name> <descriptions>
- * @return <description>
+ * Finally, the AWG itself requires waveforms to have a multiple of 32 samples.
+ * If this didn't already happen, we duplicate the entire waveform as many times as needed
+ * to meet this condition.
+ *
+ * @warning No check on total length fitting in memory is performed.  However unlikely, if
+ * you exceed the total number of points allowed, I don't know what the AWG will do.
+ *
+ * @param[in] freqList A pointer to the the freqList describing the pulse train.
+ * @param[in] pointCounts An array holding the length of each pulse in output samples.
+ * @param[in] pointInterval The output sample period, in ns.
+ * @param[inout] finalCount Pointer to memory to hold the total number of points in the final waveform.
+ * @return Pointer to the array holding all of the output waveform's points
  */
 unsigned char * genPointList(const freqList_ptr freqList, const unsigned int * pointCounts, const double pointInterval, unsigned long * finalCount);
 
-/*!	@brief 
+/*!	@brief Generate the output samples for an individual pulse.
  *
- * <details>
+ * Fills the next numPts unsigned chars starting at startPtr with
+ * a sin wave with the passed parameters.
  *
- * @param[inout] <name> <descriptions>
- * @return <description>
+ * Uses #AWG_ZERO_VAL to set the offset of the waveform from zero.
+ *
+ * @warning No bounds checking for the array is performed internally,
+ * because the function doesn't have access to the information it needs to do that.
+ *
+ * @param[in] freq The frequency of the pulse, in MHz
+ * @param[in] amp The amplitude of the pulse, should be in the range [-127.0, 127.0]
+ * @param[in] numPts The number of samples to output
+ * @param[in] pointInterval The output sample period, in ns.
+ * @param[in] startPtr The first location to put a point in.
+ * @return A pointer to the position in the array \e after the last one it filled.
  */
 unsigned char * genWavePts(double freq, double amp, unsigned int numPts, double pointInterval, unsigned char * startPtr);
 
-/*!	@brief 
+/*!	@brief A custom, getLine implementation
  *
- * <details>
+ * See [GNU Getline Documentation](http://www.gnu.org/software/libc/manual/html_node/Line-Input.html)
  *
- * @param[inout] <name> <descriptions>
- * @return <description>
+ * Reads a line from the specified file into the provided buffer.
+ * Will automatically resize the buffer for lines that will not fit.
+ *
+ * @param[inout] bufferPtr Pointer to the buffer containing the line that was read
+ * @param[inout] bufferSize Total size, in bytes, of the buffer at bufferPtr.
+ * @param[inout] fp An open file pointer to the file we're reading from.
+ * @return The number of characters we read into the buffer, including the newline (if present), but not the terminating NULL character.
+ * @return -1 on error, including EOF.
  */
 ssize_t myGetLine(char ** bufferPtr, size_t * bufferSize, FILE * fp);
 
-/*!	@brief 
+/*!	@brief Resizes all sublists of the pointed-to freqList to the specified length.
  *
- * <details>
+ * Specifically freqList has array members %freqList, ampList, and durList.
  *
- * @param[inout] <name> <descriptions>
- * @return <description>
+ * Possible reasons for returning an error value:
+ * - Passing a NULL pointer, or a pointer to a NULL pointer
+ * - realloc() call failed for any of the sub-lists.
+ *
+ * @param[in] newSize New length for all of the sub-lists
+ * @param[inout] toResize Points to a freqList_ptr of the freqList for resizing.
+ * @return 0 on success
+ * @return -1 on error
  */
 int resizeFreqList(unsigned int newSize, freqList_ptr * toResize);
 
-/*!	@brief 
+/*!	@brief Parse the file at the passed path for a pulse train specification
  *
- * <details>
+ * Reads the file line by line via myGetLine() and parses the contents via parseLine(),
+ * attempting to build the pulse train specification.
  *
- * @param[inout] <name> <descriptions>
- * @return <description>
+ * @param[in] inPath A string containing the path to the file to read the spec's from.
+ * @return A pointer to the freqList from parsing the file
+ * @return NULL on failures:
+ * - Unable to (re)allocate buffers
+ * - No pulses specified in the file
+ * - Error reading the file
  */
 freqList_ptr readSpecFile(const char * inPath);
 
-/*!	@brief 
+/*!	@brief Takes text specifying a frequency pulse and adds it to the end of a freqList
  *
- * <details>
+ * The format is described in #templateStr in templateContents.h
  *
- * @param[inout] <name> <descriptions>
- * @return <description>
+ * @param[inout] lineBuf The buffer containing the line to be parsed
+ * @param[inout] destList The freqList we'll add any specified new pulse.
+ * @return 0 on success
+ * @return #GEN_BINARY_ERESIZE if we failed to make room for the new pulse.
+ * @return #GEN_BINARY_EPARSE if we couldn't parse the line (likely because it was malformed)
  */
 int parseLine(char * lineBuf, freqList_ptr destList);
 
-/*!	@brief 
+/*!	@brief Writes byte stream suitable for transmission to the AWG to a file.
  *
- * <details>
+ * File will be output as "\<rootName\>_points".
+ * E.g. a rootName of "test" would result in a file "test_points"
  *
- * @param[inout] <name> <descriptions>
- * @return <description>
+ * See writeSummaryFile() for human-readable description.
+ *
+ * Commands generated to save the waveform on the AWG as "GPIB.WFM",
+ * then set up the correct format for the transfer, send the points,
+ * set the correct clock frequency, and ask for confirmation information back.
+ *
+ * @param[in] rootName The base of the filename we're saving to.
+ * @param[in] ptsList Pointer to the array of output samples, already stored in AWG format
+ * @param[in] numPtrs Total number of points in the output waveform
+ * @param[in] clockFreq The output sample frequency
+ * @return 0 on success
+ * @return -1 on failure
  */
 int writeToFile(const char * rootName, const unsigned char * ptsList, const unsigned long numPtrs, const double clockFreq);
 
-/*!	@brief 
+/*!	@brief Writes a human-readable text file describing the contents of the generated points file.
  *
- * <details>
+ * File will be output as "\<rootName\>_desc.txt"
+ * E.g. a rootName of "test" would result in a file "test_desc.txt"
  *
- * @param[inout] <name> <descriptions>
- * @return <description>
+ * The file contains the frequency, amplitude, duration, and number of samples for each pulse, in order.
+ * It also lists the output sample frequency (and period) used.
+ *
+ * See writeToFile() for actual contents of points file.
+ *
+ * @param[in] rootName The base of the filename we're saving to.
+ * @param[in] freqList freqList describing the generated pulse train.
+ * @param[in] pointCounts Total number of points for each pulse in the output waveform
+ * @param[in] clock_freq The output sample frequency
+ * @return 0 on success
+ * @return -1 on failure
  */
 int writeSummaryFile(const char * rootName, const freqList_ptr freqList, const unsigned int * pointCounts, const double clock_freq);
 
