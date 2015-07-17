@@ -108,8 +108,8 @@
  *  The arrays are in matched order, i.e. the first pulse represented by the 0th element of each array.
  */
 typedef struct freqList {
-	unsigned int	freqCount;	//!< The number of frequency pulses actually used in freqList, ampList, and durList.
-	unsigned int	actualSize;	//!< The total number of spaces for values in the arrays freqList, ampList, and durList.
+	unsigned int	freqCount;	//!< The number of frequency pulses actually used in %freqList, ampList, and durList.
+	unsigned int	actualSize;	//!< The total number of spaces for values in the arrays %freqList, ampList, and durList.
 	double *		freqList;	//!< Array of frequency values, in MHz.
 	double *		ampList;	//!< Array of relative amplitude values, on interval [0,1]
 	double *		durList;	//!< Array of pulse durations, in ns.
