@@ -1,3 +1,4 @@
+
 /*! @file defOptions_int.h
  * @brief Sets up global flags for debug and quiet options
  */
@@ -7,8 +8,8 @@
 
 #include "filenames.h"
 
-int g_opt_debug = 0; //!< Whether -d/--debug has been set. 0 is unset, 1 is set.
-int g_opt_quiet = 0; //!< Whether -q/--quiet has been set. 0 is unset, 1 is set.
+int                 g_opt_debug = 0;	//!< Whether -d/--debug has been set. 0 is unset, 1 is set.
+int                 g_opt_quiet = 0;	//!< Whether -q/--quiet has been set. 0 is unset, 1 is set.
 
 /*!
  * @defgroup HelpText User-requested help message
@@ -27,7 +28,7 @@ int g_opt_quiet = 0; //!< Whether -q/--quiet has been set. 0 is unset, 1 is set.
 #define SUFFIX_EXE ""
 #endif
 
-#define  ANY_ALL_TEXT "If any of -s, -e, -n, and -p are supplied, they all must be supplied.\n" //!< Text for warning when not supplying all of the required options.
+#define  ANY_ALL_TEXT "If any of -s, -e, -n, and -p are supplied, they all must be supplied.\n"	//!< Text for warning when not supplying all of the required options.
 
 /*! @brief The text displayed when invoked with -h/--help
  *
@@ -36,7 +37,7 @@ int g_opt_quiet = 0; //!< Whether -q/--quiet has been set. 0 is unset, 1 is set.
  * 
  * @showinitializer
  */
-const char helpText[] = "Usage:  genAWGpattern" SUFFIX_EXE " [options]\n\
+const char          helpText[] = "Usage:  genAWGpattern" SUFFIX_EXE " [options]\n\
 \n\
         genAWGpattern" SUFFIX_EXE " [options] -s <freq> -e <freq> -n <count>\n\
 		-p <period> [-r|-a <amplitude>]\n\
