@@ -1,0 +1,35 @@
+language: c
+compiler: gcc
+env:
+  - HOST=
+  - HOST=i686-w64-mingw32
+  - HOST=x86_64-w64-mingw32
+sudo: false
+addons:
+  apt:
+    packages:
+    - libfftw3-dev
+#    - check
+    - mingw-w64
+    - binutils-mingw-w64
+
+branches:
+  only:
+#    - master
+    - SetupTravis
+
+before_script:
+  - autoreconf --install
+  - if [ ! -z "$HOST" ]; then CC="${HOST}-gcc" ./configure --host="$HOST" --prefix="${TRAVIS_BUILD_DIR}/builds/${HOST}/"; fi
+  - if [ -z "$HOST" ]; then ./configure --prefix="${TRAVIS_BUILD_DIR}/builds/native/"; fi
+
+script:
+  - make && make check
+
+after_success:
+  - echo -e "\e[32m( \u00b4 \u25bd \` )b  $TRAVIS_BRANCH of $TRAVIS_REPO_SLUG on $HOST\e[0m" && make install
+  - ls -AR "${TRAVIS_BUILD_DIR}/builds"
+
+after_failure:
+  - echo -e "\e[31m(╯°□°)╯︵ ┻━┻  $HOST\e[0m"
+#  - ls -AR .
