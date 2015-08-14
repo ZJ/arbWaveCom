@@ -32,7 +32,7 @@ after_failure:
   - echo -e "\e[31m(╯°□°)╯︵ ┻━┻  $HOST\e[0m"
 before_deploy:
   - if [ ! -z "$HOST" ]; then export WINEXE=".exe"; fi
-  - if [ ! -z "$HOST" ]; then export HOST=native; fi
+  - if [ -z "$HOST" ]; then export HOST=native; fi
   - make install
 deploy:
   provider: releases
