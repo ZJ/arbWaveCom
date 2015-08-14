@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT([pulsed-lattice-sim], [1.0], [http://github.com/ZJ/pulsed-lattice-sim/issues], [pulsed-lattice-sim])
+AC_INIT([]arbWaveCom, [1.1], [http://github.com/ZJ/arbWaveCom/issues], [awgcom])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign color-tests])
