@@ -1,9 +1,10 @@
+#include "../config.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <fcntl.h>
-#include "genBinary\genBinary.h"
-#include "defOptions\defOptions.h"
+#include "genBinary/genBinary.h"
+#include "defOptions/defOptions.h"
 
 int main(
     int argc,
@@ -91,8 +92,9 @@ int main(
 	fprintf(stderr, "Problem generating points.\n");
 	return -1;
     }
-
+#ifdef ON_MINGW_HOST
     _fmode = _O_BINARY;	     // Turn off line ending conversion.
+#endif
     checkStatus = writeToFile(baseName, pointsList, finalCount, myOptions.clock_freq);
     if (checkStatus) {
 	fprintf(stderr, "Problem writing points file.\n");

@@ -1,0 +1,2 @@
+# Ignore all the macros, they should be generated locally
+*.m4

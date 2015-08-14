@@ -1,3 +1,4 @@
+#include "../../config.h"
 #include <getopt.h>
 #include "defOptions_int.h"
 #include "defOptions.h"
