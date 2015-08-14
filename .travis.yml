@@ -12,8 +12,12 @@ addons:
     - mingw-w64
     - binutils-mingw-w64
 branches:
-  only:
-  - SetupTravis
+#  only:
+#  - SetupTravis
+  except:
+    - master
+    - /.*-work$/
+    - /.*-test$/
 before_script:
   - autoreconf --install
   - if [ ! -z "$HOST" ]; then unset CC; fi
