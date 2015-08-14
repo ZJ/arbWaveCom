@@ -18,7 +18,7 @@ before_script:
   - autoreconf --install
   - if [ ! -z "$HOST" ]; then unset CC; fi
   - if [ ! -z "$HOST" ]; then unset CXX; fi
-  - if [ ! -z "$HOST" ]; then ./configure --host="$HOST" --prefixs="${TRAVIS_BUILD_DIR}/tmp" --bindir="${TRAVIS_BUILD_DIR}/builds/${HOST}"; fi
+  - if [ ! -z "$HOST" ]; then ./configure --host="$HOST" --prefix="${TRAVIS_BUILD_DIR}/tmp" --bindir="${TRAVIS_BUILD_DIR}/builds/${HOST}"; fi
   - if [ -z "$HOST" ]; then ./configure --prefix="${TRAVIS_BUILD_DIR}/tmp" --bindir="${TRAVIS_BUILD_DIR}/builds/native"; fi
 script:
   - make && make check
