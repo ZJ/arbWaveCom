@@ -1,34 +1,73 @@
-# Compiled Object files
-*.slo
-*.lo
+## Manual includes
+build-aux/
+config.*
+*/.libs
+*/.deps
+tests/*.log
+tests/*.trs
+tests/*.test
+*/Makefile
+Makefile
+libtool
+
+## Template of .gitignore for:
+# C-Language
+# Autotools
+# gcov
+
+## Github.com C Language Template .gitignore
+# Object files
 *.o
+*.ko
 *.obj
+*.elf
 
 # Precompiled Headers
 *.gch
 *.pch
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
+# Libraries
 *.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
 
 # Executables
 *.exe
 *.out
 *.app
+*.i*86
+*.x86_64
+*.hex
 
-# This project special cases
-testFile_*
-awgOutput_*
-template.txt
-freqSpec.txt
+# Debug files
+*.dSYM/
+
+## Github.com Autotools Template .gitignore
+# http://www.gnu.org/software/automake
+
+Makefile.in
+
+# http://www.gnu.org/software/autoconf
+
+/autom4te.cache
+/aclocal.m4
+/compile
+/configure
+/depcomp
+/install-sh
+/missing
+/stamp-h1
+
+## Github.com Gcov Template .gitignore
+# gcc coverage testing tool files
+
+*.gcno
+*.gcda
+*.gcov

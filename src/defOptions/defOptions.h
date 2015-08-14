@@ -1,3 +1,4 @@
+
 /*! @file defOptions.h
  * @brief Functions and parameters for dealing with command-line options.
  *
@@ -12,9 +13,9 @@
 #include "filenames.h"
 
 #ifndef DEFOPTIONS_INT_H
-extern int g_opt_debug; //!< Whether -d/--debug has been set. 0 is unset, 1 is set.
-extern int g_opt_quiet; //!< Whether -q/--quiet has been set. 0 is unset, 1 is set.
-extern const char helpText[]; //!< The help text to display for user-requested help.
+extern int          g_opt_debug;	//!< Whether -d/--debug has been set. 0 is unset, 1 is set.
+extern int          g_opt_quiet;	//!< Whether -q/--quiet has been set. 0 is unset, 1 is set.
+extern const char   helpText[];	//!< The help text to display for user-requested help.
 #endif
 
 /*!
@@ -23,9 +24,9 @@ extern const char helpText[]; //!< The help text to display for user-requested h
  * @{
  */
 
-#define	OPT_RET_OK		 0 //!< Indicates successful option parsing.  Continue program operation.
-#define OPT_RET_ERR		-1 //!< Indicates an error occurred while parseing options.  Exit with non-zero code.
-#define OPT_RET_EXIT	-2 //!< Indicates program should exit normally without further activity.
+#define	OPT_RET_OK		 0	//!< Indicates successful option parsing.  Continue program operation.
+#define OPT_RET_ERR		-1	//!< Indicates an error occurred while parseing options.  Exit with non-zero code.
+#define OPT_RET_EXIT	-2   //!< Indicates program should exit normally without further activity.
 
 /*! @} */
 
@@ -61,16 +62,17 @@ extern const char helpText[]; //!< The help text to display for user-requested h
  * 
  */
 typedef struct progOptions {
-	uint32_t		flags;	//!< Bit flags used to indicate on-off states for various options.  See \ref OptMasks.
-	double			amplitude;	//!< Amplitude chosen for combs with constant output-amplitude. In range [0, 1] (fraction of max).
-	double			start_f;	//!< Start frequency, sets the lowest frequency to be output in the series of pulses. In MHz.
-	double			stop_f;	//!< Stop frequency, sets the highest frequency to be output in the series of pulses. In MHz.
-	unsigned int	num_f;	//!< The number of individual pulse to generate.
-	double			clock_freq;	//!< The sample output frequency. In MHz.
-	double			tooth_period; //!< The length of each pulse. In ns.
-	char *			inputPath; //!< C-string for a command-line specified frequency specification file path.
+    uint32_t            flags;	//!< Bit flags used to indicate on-off states for various options.  See \ref OptMasks.
+    double              amplitude;	//!< Amplitude chosen for combs with constant output-amplitude. In range [0, 1] (fraction of max).
+    double              start_f;	//!< Start frequency, sets the lowest frequency to be output in the series of pulses. In MHz.
+    double              stop_f;	//!< Stop frequency, sets the highest frequency to be output in the series of pulses. In MHz.
+    unsigned int        num_f;	//!< The number of individual pulse to generate.
+    double              clock_freq;	//!< The sample output frequency. In MHz.
+    double              tooth_period;	//!< The length of each pulse. In ns.
+    char               *inputPath;	//!< C-string for a command-line specified frequency specification file path.
 } progOptions_type;
-#define OPT_INIT_VAL {0, 0.0, 0.0, 0.0, 0, 1024.0, 0.0, NULL} //!< Initialization data for a #progOptions instantiation.
+
+#define OPT_INIT_VAL {0, 0.0, 0.0, 0.0, 0, 1024.0, 0.0, NULL}	//!< Initialization data for a #progOptions instantiation.
 
 /*! @brief Takes command-line arguments and parses them
  *	
@@ -86,7 +88,11 @@ typedef struct progOptions {
  *  Must be appropriately allocated before calling this function.
  *  @return One of the values defined in @ref OptRetCodes.
  */
-int parseOptions(int argc, char * argv[], progOptions_type * options);
+int                 parseOptions(
+    int argc,
+    char *argv[],
+    progOptions_type * options
+);
 
 /*! @brief Takes a progOptions structure and prints a formatted version to stdout.
  *	
@@ -97,7 +103,10 @@ int parseOptions(int argc, char * argv[], progOptions_type * options);
  *  @param[in] idStr A pointer to a string containing the name toPrint will be referred to on screen.
  *  If a Null pointer is passed, the display will default to "options"
  */
-void printOptions(const progOptions_type * toPrint, const char * idStr);
+void                printOptions(
+    const progOptions_type * toPrint,
+    const char *idStr
+);
 
 /*! @brief Takes a bitfield and mask and prints the selected bit's state to stdout.
  *	
@@ -112,6 +121,10 @@ void printOptions(const progOptions_type * toPrint, const char * idStr);
  *  @param[in] title The name to print as a label for the decoded value.
  *  If a Null pointer is passed it will list only the bit number.
  */
-void printBitSetting(uint32_t flags, unsigned int mask, const char * title);
+void                printBitSetting(
+    uint32_t flags,
+    unsigned int mask,
+    const char *title
+);
 
 #endif

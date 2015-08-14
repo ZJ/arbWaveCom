@@ -1,0 +1,44 @@
+language: c
+compiler: gcc
+env:
+  - HOST=  PROGSUFF=-linux
+  - HOST=i686-w64-mingw32 PROGSUFF=-i686
+  - HOST=x86_64-w64-mingw32  PROGSUFF=-x86_64
+sudo: false
+addons:
+  apt:
+    packages:
+    - mingw-w64
+    - binutils-mingw-w64
+branches:
+#  only:
+#  - SetupTravis
+  except:
+    - master
+    - /.*-work$/
+    - /.*-test$/
+before_script:
+  - autoreconf --install
+  - export BUILDSDIR="${TRAVIS_BUILD_DIR}/builds"
+  - if [ ! -z "$HOST" ]; then unset CC; fi
+  - if [ ! -z "$HOST" ]; then unset CXX; fi
+  - if [ ! -z "$HOST" ]; then ./configure --host="$HOST" --prefix="${TRAVIS_BUILD_DIR}/tmp" --bindir="$BUILDSDIR" --program-suffix="$PROGSUFF"; fi
+  - if [ -z "$HOST" ]; then ./configure --prefix="${TRAVIS_BUILD_DIR}/tmp" --bindir="$BUILDSDIR" --program-suffix="$PROGSUFF"; fi
+script:
+  - make && make check
+after_success:
+  - echo -e "\e[32m( \' \u25bd \` )b  $TRAVIS_BRANCH of $TRAVIS_REPO_SLUG on $HOST\e[0m"
+after_failure:
+  - echo -e "\e[31m(╯°□°)╯︵ ┻━┻  $HOST\e[0m"
+before_deploy:
+  - if [ ! -z "$HOST" ]; then export DEPLOYEXEC="${BUILDSDIR}/awgcom${PROGSUFF}.exe"; fi
+  - if [ -z "$HOST" ]; then export DEPLOYEXEC="${BUILDSDIR}/awgcom${PROGSUFF}"; fi
+  - make install
+deploy:
+  provider: releases
+  api_key:
+    secure: X/LX2LGffdOHX+UzYZxTfMM506BKuk4rsShE8WeDFTBBkvCsD1yx3pNWtQDlc/mqnHh9DI3+gLMgCrup445cyEnxH9ejHxoCBnJJz0DDMUFgv+0vF+Q3mYoABbODMeBeOWqJxNsYC70FqeV5Z/jqowkNShJy5pyoC5ig1P8F8u9cVGop9BDAuAoPWWBrSBeJ5rI8YFgkJ1PZfSNUEAZ2lPJEb8TEjn9QRde1JXLych6JD0u2cqudT++B+S/bpLnjl9RjuiUc8ZUbTbHoqldp2ZtHUKLj6I5MJrvH4p7mUnWqCHhsDxgVNdc/jicBiS99V6Pvl2x47LwOB3WSbQGqv5DonsocD1dt3j5TqVpAMmpiewRBJMOGcBH/kPTLw8q/w5ggfhYEojzsvcxRWge9P8lK3a9R2FiN6hMMp4alIHTKE0k6WEyKDAUtgnteTlHK/ie5rDSLAzAGFr6ljJFlqDWgLQGYgMGThT5AulFu5CeVUeUgaS+tDI8PlnfOku4lXZl3V39mT2I+NPU2hvb5RBctqhNlmljvm5Mt2+NFeLglqMPfAxzTz+THt9iK7hgNMfz4M72Pqr/Y4TTeBVZx4tdTJ+YlBUTvZu8AxNg2lFtoTX0wFXzLVfuK202lsoScubiufcuaXZNxxbIHWwmdRftWK/4442nGMHfGa5VYg8w=
+  file: "${DEPLOYEXEC}"
+  on:
+    repo: ZJ/arbWaveCom
+    tags: true

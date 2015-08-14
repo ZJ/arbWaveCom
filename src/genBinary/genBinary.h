@@ -1,3 +1,4 @@
+
 /*! @file genBinary.h
  * @brief Handles generating AWG command string from user-supplied options.
  *
@@ -81,24 +82,25 @@
  * @note Actual waveforms are restricted to have lengths that are multiples of 32, but for simplicity these are shorter.
  */
 
-#define AWG_ZERO_VAL 127 //!< The integer value that corresponds to a zero-volt output on the AWG
+#define AWG_ZERO_VAL 127     //!< The integer value that corresponds to a zero-volt output on the AWG
 
 /*	See (equip. man. 4B-11)
  *	Max clock rate is 1.024 GHz (= 1024 MHz)
  *	Min clock rate is 1 kHz     (= 0.001 MHz)
  */
 
-#define	PI		3.141592653589793 //!< Pi to double precision
-#define	TWO_PI	6.283185307179586 //!< Twice pi to double precision
-#define DEFAULT_FREQ_LIST_SIZE 8  //!< Default frequency list size, tradeoff between minimum memory footprint and overhead for expansion if too small.
+#define	PI		3.141592653589793	//!< Pi to double precision
+#define	TWO_PI	6.283185307179586	//!< Twice pi to double precision
+#define DEFAULT_FREQ_LIST_SIZE 8	//!< Default frequency list size, tradeoff between minimum memory footprint and overhead for expansion if too small.
 
 /*!
  * @defgroup GenBinaryRetCodes genBinary subsystem return codes
  * @brief Return codes used internally to indicate kinds of failures.
  * @{
  */
-#define GEN_BINARY_EPARSE  -1 //!< An error occurred while parsing a value
-#define GEN_BINARY_ERESIZE -2 //!< An error occurred while resizing an array
+#define GEN_BINARY_EPARSE  -1	//!< An error occurred while parsing a value
+#define GEN_BINARY_ERESIZE -2	//!< An error occurred while resizing an array
+
 /*! @} */
 
 /*! @brief Holds all the information needed to describe a train of frequency pulses.
@@ -108,13 +110,13 @@
  *  The arrays are in matched order, i.e. the first pulse represented by the 0th element of each array.
  */
 typedef struct freqList {
-	unsigned int	freqCount;	//!< The number of frequency pulses actually used in %freqList, ampList, and durList.
-	unsigned int	actualSize;	//!< The total number of spaces for values in the arrays %freqList, ampList, and durList.
-	double *		freqList;	//!< Array of frequency values, in MHz.
-	double *		ampList;	//!< Array of relative amplitude values, on interval [0,1]
-	double *		durList;	//!< Array of pulse durations, in ns.
+    unsigned int        freqCount;	//!< The number of frequency pulses actually used in %freqList, ampList, and durList.
+    unsigned int        actualSize;	//!< The total number of spaces for values in the arrays %freqList, ampList, and durList.
+    double             *freqList;	//!< Array of frequency values, in MHz.
+    double             *ampList;	//!< Array of relative amplitude values, on interval [0,1]
+    double             *durList;	//!< Array of pulse durations, in ns.
 } freqList_type;
-typedef freqList_type * freqList_ptr;  //!< Pointer to a #freqList
+typedef freqList_type *freqList_ptr;	//!< Pointer to a #freqList
 
 /*!	@brief Allocates an empty freqList
  *
@@ -123,15 +125,18 @@ typedef freqList_type * freqList_ptr;  //!< Pointer to a #freqList
  * @return A pointer to the newly allocated freqList
  * @return NULL pointer on failure.
  */
-freqList_ptr blankFreqList();
- 
+freqList_ptr        blankFreqList(
+);
+
 /*!	@brief Frees all memory associated with the referenced freqList
  *
  * @note Cannot marker the pointer as NULL, the caller must do this.
  *
  * @param[in] toFree A pointer to the freqList to be freed.
  */
-void freeFreqList(freqList_ptr toFree);
+void                freeFreqList(
+    freqList_ptr toFree
+);
 
 /*!	@brief Allocates new arrays of fixed size for the referenced freqList
  *
@@ -145,7 +150,10 @@ void freeFreqList(freqList_ptr toFree);
  * @return 0 on success
  * @return -1 on failure.
  */
-int allocSubLists(freqList_ptr toSet, unsigned int nFreqs);
+int                 allocSubLists(
+    freqList_ptr toSet,
+    unsigned int nFreqs
+);
 
 /*!	@brief Sets the #freqList::freqList to frequencies evenly spaced over an interval
  *
@@ -157,7 +165,11 @@ int allocSubLists(freqList_ptr toSet, unsigned int nFreqs);
  * @param[in] stop_f The final frequency in the pulse train.
  * @return 0, always.
  */
-int setFreqList(freqList_ptr toSet, const double start_f, const double stop_f);
+int                 setFreqList(
+    freqList_ptr toSet,
+    const double start_f,
+    const double stop_f
+);
 
 /*!	@brief Sets the amplitude of every pulse.
  *
@@ -167,7 +179,10 @@ int setFreqList(freqList_ptr toSet, const double start_f, const double stop_f);
  * @param[in] amplitude The value of the amplitude to use.
  * @return 0, always.
  */
-int setFixedAmp(freqList_ptr toSet, const double amplitude);
+int                 setFixedAmp(
+    freqList_ptr toSet,
+    const double amplitude
+);
 
 /*!	@brief Sets every pulse to a random amplitude.
  *
@@ -179,7 +194,9 @@ int setFixedAmp(freqList_ptr toSet, const double amplitude);
  * @param[inout] toSet Pointer to the freqList to change.
  * @return 0, always
  */
-int setRandAmp(freqList_ptr toSet);
+int                 setRandAmp(
+    freqList_ptr toSet
+);
 
 /*!	@brief Sets the duration of every pulse to the same value.
  *
@@ -189,7 +206,10 @@ int setRandAmp(freqList_ptr toSet);
  * @param[in] duration Duration of each pulse, in ns.
  * @return 0, always
  */
-int setFixedDur(freqList_ptr toSet, const double duration);
+int                 setFixedDur(
+    freqList_ptr toSet,
+    const double duration
+);
 
 /*!	@brief Find the number of points that finishes a half cycle closest to a target duration.
  *
@@ -203,7 +223,11 @@ int setFixedDur(freqList_ptr toSet, const double duration);
  * @param[in] frequency The frequency for this pulse, in MHz.
  * @return The number of output samples to complete a half-cycle nearest the targetDuration.
  */
-unsigned int pointsToHalfCycle(double targetDuration, double pointInterval, double frequency);
+unsigned int        pointsToHalfCycle(
+    double targetDuration,
+    double pointInterval,
+    double frequency
+);
 
 /*!	@brief Allocates an array holding the number of samples for every pulse.
  *
@@ -215,7 +239,10 @@ unsigned int pointsToHalfCycle(double targetDuration, double pointInterval, doub
  * @return A pointer to the array of points on success
  * @return NULL on failure.
  */
-unsigned int * pointCounts(const freqList_ptr freqList, const double pointInterval);
+unsigned int       *pointCounts(
+    const freqList_ptr freqList,
+    const double pointInterval
+);
 
 /*!	@brief Generates the full waveform, including continuity and length checks.
  *
@@ -236,7 +263,12 @@ unsigned int * pointCounts(const freqList_ptr freqList, const double pointInterv
  * @param[inout] finalCount Pointer to memory to hold the total number of points in the final waveform.
  * @return Pointer to the array holding all of the output waveform's points
  */
-unsigned char * genPointList(const freqList_ptr freqList, const unsigned int * pointCounts, const double pointInterval, unsigned long * finalCount);
+unsigned char      *genPointList(
+    const freqList_ptr freqList,
+    const unsigned int *pointCounts,
+    const double pointInterval,
+    unsigned long *finalCount
+);
 
 /*!	@brief Generate the output samples for an individual pulse.
  *
@@ -255,7 +287,13 @@ unsigned char * genPointList(const freqList_ptr freqList, const unsigned int * p
  * @param[in] startPtr The first location to put a point in.
  * @return A pointer to the position in the array \e after the last one it filled.
  */
-unsigned char * genWavePts(double freq, double amp, unsigned int numPts, double pointInterval, unsigned char * startPtr);
+unsigned char      *genWavePts(
+    double freq,
+    double amp,
+    unsigned int numPts,
+    double pointInterval,
+    unsigned char *startPtr
+);
 
 /*!	@brief A custom, getLine implementation
  *
@@ -270,7 +308,11 @@ unsigned char * genWavePts(double freq, double amp, unsigned int numPts, double 
  * @return The number of characters we read into the buffer, including the newline (if present), but not the terminating NULL character.
  * @return -1 on error, including EOF.
  */
-ssize_t myGetLine(char ** bufferPtr, size_t * bufferSize, FILE * fp);
+ssize_t             myGetLine(
+    char **bufferPtr,
+    size_t * bufferSize,
+    FILE * fp
+);
 
 /*!	@brief Resizes all sublists of the pointed-to freqList to the specified length.
  *
@@ -285,7 +327,10 @@ ssize_t myGetLine(char ** bufferPtr, size_t * bufferSize, FILE * fp);
  * @return 0 on success
  * @return -1 on error
  */
-int resizeFreqList(unsigned int newSize, freqList_ptr * toResize);
+int                 resizeFreqList(
+    unsigned int newSize,
+    freqList_ptr * toResize
+);
 
 /*!	@brief Parse the file at the passed path for a pulse train specification
  *
@@ -299,7 +344,9 @@ int resizeFreqList(unsigned int newSize, freqList_ptr * toResize);
  * - No pulses specified in the file
  * - Error reading the file
  */
-freqList_ptr readSpecFile(const char * inPath);
+freqList_ptr        readSpecFile(
+    const char *inPath
+);
 
 /*!	@brief Takes text specifying a frequency pulse and adds it to the end of a freqList
  *
@@ -311,7 +358,10 @@ freqList_ptr readSpecFile(const char * inPath);
  * @return #GEN_BINARY_ERESIZE if we failed to make room for the new pulse.
  * @return #GEN_BINARY_EPARSE if we couldn't parse the line (likely because it was malformed)
  */
-int parseLine(char * lineBuf, freqList_ptr destList);
+int                 parseLine(
+    char *lineBuf,
+    freqList_ptr destList
+);
 
 /*!	@brief Writes byte stream suitable for transmission to the AWG to a file.
  *
@@ -331,7 +381,12 @@ int parseLine(char * lineBuf, freqList_ptr destList);
  * @return 0 on success
  * @return -1 on failure
  */
-int writeToFile(const char * rootName, const unsigned char * ptsList, const unsigned long numPtrs, const double clockFreq);
+int                 writeToFile(
+    const char *rootName,
+    const unsigned char *ptsList,
+    const unsigned long numPtrs,
+    const double clockFreq
+);
 
 /*!	@brief Writes a human-readable text file describing the contents of the generated points file.
  *
@@ -350,6 +405,11 @@ int writeToFile(const char * rootName, const unsigned char * ptsList, const unsi
  * @return 0 on success
  * @return -1 on failure
  */
-int writeSummaryFile(const char * rootName, const freqList_ptr freqList, const unsigned int * pointCounts, const double clock_freq);
+int                 writeSummaryFile(
+    const char *rootName,
+    const freqList_ptr freqList,
+    const unsigned int *pointCounts,
+    const double clock_freq
+);
 
 #endif
